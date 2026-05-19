@@ -21,16 +21,16 @@ class AdminPanel {
         const today = new Date();
         console.log('Data de hoje:', today.toLocaleDateString('pt-BR'));
         console.log('Dia da semana de hoje:', today.getDay()); // 0=Domingo, 1=Segunda...
-        
+
         this.hideLoadingScreen();
         this.setupEventListeners();
         this.generateScheduleTable();
         this.loadAppointments();
         this.updateWeekDisplay();
-        
-        // Mostrar semana atual para debug
+
+        // Mostrar semana atual para debug /
         const currentWeekDates = this.getWeekDates(0);
-        console.log('Semana atual calculada:', currentWeekDates.map(d => `${d.toLocaleDateString('pt-BR')} (${['Dom','Seg','Ter','Qua','Qui','Sex','Sáb'][d.getDay()]})`));
+        console.log('Semana atual calculada:', currentWeekDates.map(d => `${d.toLocaleDateString('pt-BR')} (${['Dom', 'Seg', 'Ter', 'Qua', 'Qui', 'Sex', 'Sáb'][d.getDay()]})`));
     }
 
     // =================================================================
@@ -115,7 +115,7 @@ class AdminPanel {
 
         hours.forEach(hour => {
             const row = document.createElement('tr');
-            
+
             // Coluna do horário
             const timeCell = document.createElement('td');
             timeCell.className = 'time-slot';
@@ -128,13 +128,13 @@ class AdminPanel {
                 cell.dataset.hour = hour;
                 cell.dataset.day = day;
                 cell.className = 'schedule-cell';
-                
+
                 // Adicionar indicador de vago
                 const emptySlot = document.createElement('div');
                 emptySlot.className = 'empty-slot';
                 emptySlot.innerHTML = '<i class="fas fa-plus"></i>';
                 cell.appendChild(emptySlot);
-                
+
                 row.appendChild(cell);
             }
 
@@ -174,7 +174,7 @@ class AdminPanel {
 
         // Obter datas da semana atual como strings YYYY-MM-DD
         const weekDates = this.getWeekDates(this.currentWeekOffset);
-        const weekDateStrings = weekDates.map(d => 
+        const weekDateStrings = weekDates.map(d =>
             `${d.getFullYear()}-${String(d.getMonth() + 1).padStart(2, '0')}-${String(d.getDate()).padStart(2, '0')}`
         );
         console.log('Datas da semana (ISO):', weekDateStrings);
@@ -244,12 +244,12 @@ class AdminPanel {
         const card = document.createElement('div');
         card.className = `appointment-card ${appointment.status || ''}`;
         card.dataset.id = appointment.id;
-        
+
         // Aplicar cor de fundo baseada no status
         if (appointment.status === 'concluido') {
             card.style.background = '#28a745'; // Verde para concluídos
         }
-        
+
         card.innerHTML = `
             <div class="appointment-client-name">${appointment.cliente}</div>
             <div class="appointment-service-name">${appointment.servico}</div>
@@ -270,11 +270,11 @@ class AdminPanel {
     markAsComplete(appointmentId) {
         try {
             console.log('Marcando agendamento como concluído:', appointmentId);
-            
+
             // Obter agendamentos atuais do localStorage
             let appointments = JSON.parse(localStorage.getItem('meusAgendamentos')) || [];
             console.log('Agendamentos antes da conclusão:', appointments.length);
-            
+
             // Encontrar o agendamento
             const appointmentIndex = appointments.findIndex(app => app.id === appointmentId);
             if (appointmentIndex === -1) {
@@ -286,31 +286,31 @@ class AdminPanel {
             // Atualizar status
             appointments[appointmentIndex].status = 'concluido';
             console.log('Status atualizado para concluído');
-            
+
             // Salvar no localStorage
             localStorage.setItem('meusAgendamentos', JSON.stringify(appointments));
             console.log('Agendamentos salvos no localStorage');
-            
+
             // Atualizar array local
             this.appointments = appointments;
-            
+
             // Fechar modal
             const modal = document.getElementById('appointmentModal');
             if (modal) {
                 modal.classList.remove('active');
             }
-            
+
             // Atualizar interface do Painel
             this.populateScheduleTable();
             console.log('Tabela do Painel atualizada');
-            
+
             // Disparar evento para sincronizar com outras páginas
             window.dispatchEvent(new CustomEvent('appointmentsUpdated'));
             console.log('Evento de sincronização disparado');
-            
+
             // Mostrar notificação
             this.showNotification('Agendamento marcado como concluído com sucesso', 'success');
-            
+
         } catch (error) {
             console.error('Erro ao marcar agendamento como concluído:', error);
             this.showNotification('Erro ao marcar agendamento como concluído', 'error');
@@ -319,20 +319,20 @@ class AdminPanel {
 
     deleteAppointment(appointmentId) {
         console.log('Excluindo agendamento:', appointmentId);
-        
+
         // Obter agendamentos atuais
         const agendamentos = JSON.parse(localStorage.getItem('meusAgendamentos')) || [];
-        
+
         // Filtrar removendo o ID correspondente (garantindo comparação de string)
         const novosAgendamentos = agendamentos.filter(a => a.id.toString() !== appointmentId.toString());
-        
+
         // Salvar base atualizada
         localStorage.setItem('meusAgendamentos', JSON.stringify(novosAgendamentos));
-        
+
         // Disparar evento de storage para outras abas (o navegador faz isso automaticamente ao setItem, 
         // mas aqui forçamos a atualização da UI local antes do reload se necessário)
         console.log('Agendamento removido da base unificada');
-        
+
         // Recarregar para atualizar a grade administrativa
         window.location.reload();
     }
@@ -342,7 +342,7 @@ class AdminPanel {
         const notification = document.createElement('div');
         notification.className = `notification notification-${type}`;
         notification.textContent = message;
-        
+
         // Estilos
         notification.style.cssText = `
             position: fixed;
@@ -357,9 +357,9 @@ class AdminPanel {
             transform: translateX(100%);
             transition: all 0.3s ease;
         `;
-        
+
         // Cor baseada no tipo
-        switch(type) {
+        switch (type) {
             case 'success':
                 notification.style.background = '#28a745';
                 break;
@@ -369,15 +369,15 @@ class AdminPanel {
             default:
                 notification.style.background = '#007bff';
         }
-        
+
         document.body.appendChild(notification);
-        
+
         // Animar entrada
         setTimeout(() => {
             notification.style.opacity = '1';
             notification.style.transform = 'translateX(0)';
         }, 100);
-        
+
         // Remover após 3 segundos
         setTimeout(() => {
             notification.style.opacity = '0';
@@ -391,10 +391,10 @@ class AdminPanel {
     }
     showAppointmentDetails(appointment) {
         this.selectedAppointment = appointment;
-        
+
         const modal = document.getElementById('appointmentModal');
         const modalBody = document.getElementById('modalBody');
-        
+
         if (!modal || !modalBody) return;
 
         modalBody.innerHTML = `
@@ -431,12 +431,12 @@ class AdminPanel {
                 <span class="detail-value">${this.formatDate(appointment.criadoEm)}</span>
             </div>
             <div class="modal-actions">
-                ${appointment.status !== 'concluido' ? 
-                    `<button class="btn-complete-modal" onclick="adminPanel.markAsComplete('${appointment.id}')">
+                ${appointment.status !== 'concluido' ?
+                `<button class="btn-complete-modal" onclick="adminPanel.markAsComplete('${appointment.id}')">
                         <i class="fas fa-check"></i> Marcar como Concluído
-                    </button>` : 
-                    `<span class="status-badge completed">Concluído</span>`
-                }
+                    </button>` :
+                `<span class="status-badge completed">Concluído</span>`
+            }
                 <button class="btn-delete-modal" onclick="adminPanel.deleteAppointment('${appointment.id}')">
                     <i class="fas fa-trash"></i> Excluir Agendamento
                 </button>
@@ -541,7 +541,7 @@ class AdminPanel {
         if (!weekDisplay) return;
 
         const weekDates = this.getWeekDates(this.currentWeekOffset);
-        
+
         // Validar se temos datas válidas
         if (!weekDates || weekDates.length === 0) {
             console.error('Nenhuma data válida encontrada para a semana');
@@ -585,31 +585,31 @@ class AdminPanel {
     getWeekDates(weekOffset = 0) {
         try {
             const today = new Date();
-            
+
             // Validar data atual
             if (isNaN(today.getTime())) {
                 console.error('Data atual inválida');
                 return [];
             }
-            
+
             const currentDay = today.getDay(); // 0 = Domingo, 1 = Segunda, ..., 6 = Sábado
-            
+
             // Calcular a segunda-feira da semana atual
             // Se hoje é Domingo (0), voltar 6 dias para chegar na segunda-feira
             // Se hoje é Segunda (1), voltar 0 dias  
             // Se hoje é Terça (2), voltar 1 dia, etc.
             const daysToMonday = currentDay === 0 ? -6 : 1 - currentDay;
-            
+
             // Criar data da segunda-feira sem problemas de fuso horário
             const mondayDate = new Date(today);
             mondayDate.setDate(today.getDate() + daysToMonday + (weekOffset * 7));
-            
+
             // Validar data da segunda-feira
             if (isNaN(mondayDate.getTime())) {
                 console.error('Data da segunda-feira inválida');
                 return [];
             }
-            
+
             // Formatar como YYYY-MM-DD para evitar UTC issues
             const mondayStr = `${mondayDate.getFullYear()}-${String(mondayDate.getMonth() + 1).padStart(2, '0')}-${String(mondayDate.getDate()).padStart(2, '0')}`;
             const monday = new Date(mondayStr + 'T12:00:00'); // Forçar meio-dia horário local
@@ -625,16 +625,16 @@ class AdminPanel {
                 // Criar cada dia da semana sem problemas de fuso horário
                 const dayDate = new Date(monday);
                 dayDate.setDate(monday.getDate() + i);
-                
+
                 // Validar cada dia
                 if (isNaN(dayDate.getTime())) {
                     console.error(`Data inválida para o dia ${i} da semana`);
                     continue; // Pular este dia inválido
                 }
-                
+
                 const dateStr = `${dayDate.getFullYear()}-${String(dayDate.getMonth() + 1).padStart(2, '0')}-${String(dayDate.getDate()).padStart(2, '0')}`;
                 const date = new Date(dateStr + 'T12:00:00');
-                
+
                 // Validar data final
                 if (!isNaN(date.getTime())) {
                     weekDates.push(date);
@@ -648,11 +648,11 @@ class AdminPanel {
                 console.warn(`Apenas ${weekDates.length} dias válidos encontrados (esperava 6)`);
             }
 
-            console.log(`Semana offset ${weekOffset} (calculada a partir de ${today.toLocaleDateString('pt-BR')}):`, weekDates.map(d => `${d.toLocaleDateString('pt-BR')} (${['Dom','Seg','Ter','Qua','Qui','Sex','Sáb'][d.getDay()]})`));
+            console.log(`Semana offset ${weekOffset} (calculada a partir de ${today.toLocaleDateString('pt-BR')}):`, weekDates.map(d => `${d.toLocaleDateString('pt-BR')} (${['Dom', 'Seg', 'Ter', 'Qua', 'Qui', 'Sex', 'Sáb'][d.getDay()]})`));
             console.log('Timestamps das datas:', weekDates.map(d => d.getTime()));
-            
+
             return weekDates;
-            
+
         } catch (error) {
             console.error('Erro no getWeekDates:', error);
             return [];
@@ -665,7 +665,7 @@ class AdminPanel {
     parseAppointmentDate(dateString) {
         console.log('=== PARSEANDO DATA ===');
         console.log('String original:', dateString);
-        
+
         // Tentar diferentes formatos de data
         const formats = [
             /^(\d{2})\/(\d{2})\/(\d{4})$/, // DD/MM/YYYY
@@ -678,35 +678,35 @@ class AdminPanel {
             if (match) {
                 console.log('Formato detectado:', format);
                 console.log('Match groups:', match);
-                
+
                 if (format === formats[2]) {
                     // Formato "Qua 29/04" - extrair dia e mês, ano atual
                     const dayAbbrev = match[1]; // "Qua"
                     const day = parseInt(match[2]);
                     const month = parseInt(match[3]) - 1;
                     const year = new Date().getFullYear();
-                    
+
                     console.log('Abreviação do dia:', dayAbbrev);
                     console.log('Dia:', day);
                     console.log('Mês:', month);
                     console.log('Ano:', year);
-                    
+
                     // Criar data sem problemas de fuso horário
                     // Usar formato YYYY-MM-DD para evitar UTC issues
                     const dateStr = `${year}-${String(month + 1).padStart(2, '0')}-${String(day).padStart(2, '0')}`;
                     const date = new Date(dateStr + 'T12:00:00'); // Forçar meio-dia horário local
-                    
+
                     console.log('Data string criada:', dateStr);
                     console.log('Data criada (sem fuso):', date.toLocaleDateString('pt-BR'));
                     console.log('Data getTime():', date.getTime());
-                    
+
                     // Verificar se o dia da semana bate
                     const expectedDayIndex = this.getDayIndexFromAbbreviation(dayAbbrev);
                     const actualDayIndex = date.getDay();
-                    
+
                     console.log('Dia da semana esperado:', expectedDayIndex, `(${dayAbbrev})`);
-                    console.log('Dia da semana real:', actualDayIndex, `(${['Dom','Seg','Ter','Qua','Qui','Sex','Sáb'][actualDayIndex]})`);
-                    
+                    console.log('Dia da semana real:', actualDayIndex, `(${['Dom', 'Seg', 'Ter', 'Qua', 'Qui', 'Sex', 'Sáb'][actualDayIndex]})`);
+
                     // Ajustar se necessário (considerando domingo=0)
                     if (expectedDayIndex !== actualDayIndex) {
                         console.log(`Ajustando dia da semana: esperado ${expectedDayIndex}, atual ${actualDayIndex}`);
@@ -720,7 +720,7 @@ class AdminPanel {
                             }
                         }
                     }
-                    
+
                     console.log('Data final retornada:', date.toLocaleDateString('pt-BR'));
                     return date;
                 } else {
@@ -728,7 +728,7 @@ class AdminPanel {
                     let day = parseInt(match[1]);
                     let month = parseInt(match[2]) - 1;
                     let year = parseInt(match[3]);
-                    
+
                     if (year < 100) {
                         year += 2000;
                     }
@@ -772,12 +772,12 @@ class AdminPanel {
         console.log('=== COMPARANDO DATAS ===');
         console.log('Data do agendamento:', appointmentDate.toLocaleDateString('pt-BR'));
         console.log('Timestamp do agendamento:', appointmentDate.getTime());
-        
+
         // Comparação EXATA de data completa (dia/mês/ano)
         for (let i = 0; i < weekDates.length; i++) {
             const weekDate = weekDates[i];
             console.log(`Comparando com ${i}: ${weekDate.toLocaleDateString('pt-BR')} (timestamp: ${weekDate.getTime()})`);
-            
+
             // Comparação completa: dia + mês + ano
             if (appointmentDate.getTime() === weekDate.getTime()) {
                 console.log(`Data exata encontrada: ${appointmentDate.toLocaleDateString('pt-BR')} = ${weekDate.toLocaleDateString('pt-BR')} (índice ${i})`);
@@ -839,16 +839,16 @@ class AdminPanel {
             transform: translateX(400px);
             transition: all 0.3s cubic-bezier(0.4, 0, 0.2, 1);
         `;
-        
+
         const icon = this.getNotificationIcon(type);
         notification.innerHTML = `<i class="fas ${icon}" style="font-size: 18px;"></i> <span>${message}</span>`;
-        
+
         document.body.appendChild(notification);
-        
+
         setTimeout(() => {
             notification.style.transform = 'translateX(0)';
         }, 100);
-        
+
         setTimeout(() => {
             notification.style.transform = 'translateX(400px)';
             notification.style.opacity = '0';
