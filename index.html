@@ -1,0 +1,367 @@
+<!DOCTYPE html>
+<html lang="pt-br">
+
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <title>Hair Stylist - Agendamento Premium</title>
+    <meta name="description"
+        content="Hair Stylist - Experiência premium em cuidados capilares. Agende seu horário com os melhores profissionais.">
+    <meta name="keywords" content="salão de beleza, cabelo, progressiva, tintura, corte, botox capilar">
+    <meta name="author" content="Hair Stylist">
+
+    <!-- Open Graph Meta Tags -->
+    <meta property="og:title" content="Hair Stylist - Agendamento Premium">
+    <meta property="og:description" content="Experiência premium em cuidados capilares">
+    <meta property="og:type" content="website">
+
+    <!-- Favicon -->
+    <link rel="icon" type="image/svg+xml"
+        href="data:image/svg+xml,<svg xmlns='http://www.w3.org/2000/svg' viewBox='0 0 100 100'><text y='0.9em' font-size='90'>💇‍♀️</text></svg>">
+
+    <!-- CSS -->
+    <link rel="stylesheet" href="css/style.css">
+
+    <!-- Google Fonts -->
+    <link rel="preconnect" href="https://fonts.googleapis.com">
+    <link rel="preconnect" href="https://fonts.gstatic.com" crossorigin>
+    <link
+        href="https://fonts.googleapis.com/css2?family=Playfair+Display:wght@400;700&family=Montserrat:wght@300;400;500;600;700&display=swap"
+        rel="stylesheet">
+
+    <!-- Font Awesome -->
+    <link rel="stylesheet" href="https://cdnjs.cloudflare.com/ajax/libs/font-awesome/6.4.0/css/all.min.css">
+</head>
+
+<body>
+    <!-- Loading Screen -->
+    <div id="loadingScreen" class="loading-screen">
+        <div class="loading-content">
+            <div class="logo-loader">
+                <img src="img/logo.png" alt="Hair Stylist Logo">
+            </div>
+            <h2>Hair Stylist</h2>
+            <p>Preparando sua experiência premium...</p>
+        </div>
+    </div>
+
+    <!-- Navigation Header -->
+    <header class="header-main">
+        <nav class="navbar">
+            <div class="nav-container">
+                <div class="nav-brand">
+                    <div class="logo-icon">
+                        <img src="img/logo.png" alt="Logo" class="logo-img">
+                    </div>
+                    <div class="logo-text">
+                        <h1>Hair Stylist</h1>
+                        <span class="tagline">Experiência Premium</span>
+                    </div>
+                </div>
+
+                <div class="nav-actions">
+                    <!-- Meus Agendamentos disponível apenas após verificação (servicos.html e agendamento.html) -->
+                </div>
+            </div>
+        </nav>
+    </header>
+
+    <!-- Hero Section -->
+    <section class="hero-section">
+        <div class="hero-container">
+            <div class="hero-content">
+                <div class="hero-text">
+                    <h1 class="hero-title">
+                        <span class="line-1">Transforme seu visual</span>
+                        <span class="line-2">com elegância</span>
+                        <span class="line-3">e sofisticação</span>
+                    </h1>
+                    <p class="hero-subtitle">
+                        No Hair Stylist, cada detalhe importa.
+                        Experimente o melhor em cuidados capilares
+                        com atendimento exclusivo e produtos premium.
+                    </p>
+                    <div class="hero-features">
+                        <div class="feature-item">
+                            <i class="fas fa-award"></i>
+                            <span>Especialista Certificada</span>
+                        </div>
+                        <div class="feature-item">
+                            <i class="fas fa-gem"></i>
+                            <span>Produtos Premium</span>
+                        </div>
+                        <div class="feature-item">
+                            <i class="fas fa-clock"></i>
+                            <span>Agendamento Rápido</span>
+                        </div>
+                    </div>
+                </div>
+
+                <div class="hero-visual">
+                    <div class="floating-elements">
+                        <div class="float-element element-1">
+                            <i class="fas fa-wand-magic-sparkles"></i>
+                        </div>
+                        <div class="float-element element-2">
+                            <i class="fas fa-gem"></i>
+                        </div>
+                        <div class="float-element element-3">
+                            <i class="fas fa-crown"></i>
+                        </div>
+                    </div>
+                </div>
+            </div>
+        </div>
+
+        <div class="scroll-indicator">
+            <div class="scroll-arrow">
+                <i class="fas fa-chevron-down"></i>
+            </div>
+        </div>
+    </section>
+
+    <!-- Main Content -->
+    <main class="main-content">
+        <!-- Registration Section -->
+        <section class="registration-section">
+            <div class="section-container">
+                <div class="section-header">
+                    <div class="section-badge">
+                        <i class="fas fa-user-plus"></i>
+                        <span>Cadastro</span>
+                    </div>
+                    <h2 class="section-title">Comece sua jornada</h2>
+                    <p class="section-subtitle">
+                        Preencha seus dados para iniciar uma experiência transformadora
+                    </p>
+                </div>
+
+                <div class="registration-container">
+                    <div class="form-wrapper">
+                        <form id="cadastroForm" class="registration-form">
+                            <div class="form-progress">
+                                <div class="progress-step active" data-step="1">
+                                    <div class="step-number">1</div>
+                                    <div class="step-label">Dados</div>
+                                </div>
+                                <div class="progress-line"></div>
+                                <div class="progress-step" data-step="2">
+                                    <div class="step-number">2</div>
+                                    <div class="step-label">Verificação</div>
+                                </div>
+                                <div class="progress-line"></div>
+                                <div class="progress-step" data-step="3">
+                                    <div class="step-number">3</div>
+                                    <div class="step-label">Serviço</div>
+                                </div>
+                                <div class="progress-line"></div>
+                                <div class="progress-step" data-step="4">
+                                    <div class="step-number">4</div>
+                                    <div class="step-label">Agenda</div>
+                                </div>
+                            </div>
+
+                            <div class="form-fields">
+                                <div class="field-group">
+                                    <label for="nome" class="field-label">
+                                        <i class="fas fa-user"></i>
+                                        Nome Completo
+                                    </label>
+                                    <div class="input-wrapper">
+                                        <input type="text" id="nome" name="nome" class="field-input"
+                                            placeholder="Digite seu nome completo" required autocomplete="name">
+                                        <div class="input-icon">
+                                            <i class="fas fa-user"></i>
+                                        </div>
+                                    </div>
+                                    <div class="field-helper">Mínimo de 3 caracteres</div>
+                                </div>
+
+                                <div class="field-group">
+                                    <label for="email" class="field-label">
+                                        <i class="fas fa-envelope"></i>
+                                        E-mail
+                                    </label>
+                                    <div class="input-wrapper">
+                                        <input type="email" id="email" name="email" class="field-input"
+                                            placeholder="seuemail@exemplo.com" required autocomplete="email">
+                                        <div class="input-icon">
+                                            <i class="fas fa-envelope"></i>
+                                        </div>
+                                    </div>
+                                    <div class="field-helper">E-mail válido para confirmação</div>
+                                </div>
+
+                                <div class="field-group">
+                                    <label for="telefone" class="field-label">
+                                        <i class="fas fa-phone"></i>
+                                        Telefone
+                                    </label>
+                                    <div class="input-wrapper">
+                                        <input type="tel" id="telefone" name="telefone" class="field-input"
+                                            placeholder="(99) 99999-9999" required autocomplete="tel" maxlength="15">
+                                        <div class="input-icon">
+                                            <i class="fas fa-phone"></i>
+                                        </div>
+                                    </div>
+                                    <div class="field-helper">Formato: (99) 99999-9999</div>
+                                </div>
+                            </div>
+
+                            <div class="form-actions">
+                                <button type="submit" class="btn-primary btn-submit">
+                                    <span class="btn-text">Avançar para Serviços</span>
+                                    <i class="fas fa-arrow-right"></i>
+                                </button>
+                            </div>
+                        </form>
+                    </div>
+
+                    <div class="info-sidebar">
+                        <div class="info-card">
+                            <div class="info-icon">
+                                <i class="fas fa-shield-alt"></i>
+                            </div>
+                            <h3>Segurança Garantida</h3>
+                            <p>Seus dados estão protegidos com criptografia de ponta.</p>
+                        </div>
+
+                        <div class="info-card">
+                            <div class="info-icon">
+                                <i class="fas fa-bolt"></i>
+                            </div>
+                            <h3>Agendamento Rápido</h3>
+                            <p>Processo simplificado em apenas 3 passos.</p>
+                        </div>
+
+                        <div class="info-card">
+                            <div class="info-icon">
+                                <i class="fas fa-headset"></i>
+                            </div>
+                            <h3>Suporte Premium</h3>
+                            <p>Atendimento personalizado para todas as suas dúvidas.</p>
+                        </div>
+                    </div>
+                </div>
+            </div>
+        </section>
+
+        <!-- Benefits Section -->
+        <section class="benefits-section">
+            <div class="section-container">
+                <div class="section-header">
+                    <h2 class="section-title">Por que escolher o Hair Stylist?</h2>
+                    <p class="section-subtitle">Diferenciais que fazem a diferença</p>
+                </div>
+
+                <div class="benefits-grid">
+                    <div class="benefit-card">
+                        <div class="benefit-icon">
+                            <i class="fas fa-crown"></i>
+                        </div>
+                        <h3>Qualidade Premium</h3>
+                        <p>Produtos importados e técnicas avançadas para resultados excepcionais.</p>
+                    </div>
+
+                    <div class="benefit-card">
+                        <div class="benefit-icon">
+                            <i class="fas fa-award"></i>
+                        </div>
+                        <h3>Especialista Dedicada</h3>
+                        <p>Profissional com certificações e anos de experiência dedicada.</p>
+                    </div>
+
+                    <div class="benefit-card">
+                        <div class="benefit-icon">
+                            <i class="fas fa-gem"></i>
+                        </div>
+                        <h3>Atendimento VIP</h3>
+                        <p>Experiência personalizada desde o agendamento até o resultado final.</p>
+                    </div>
+
+                    <div class="benefit-card">
+                        <div class="benefit-icon">
+                            <i class="fas fa-magic"></i>
+                        </div>
+                        <h3>Tendências Mundiais</h3>
+                        <p>Sempre atualizados com as últimas tendências da moda internacional.</p>
+                    </div>
+                </div>
+            </div>
+        </section>
+    </main>
+
+    <!-- Footer -->
+    <footer class="footer-main">
+        <div class="footer-container">
+            <div class="footer-content">
+                <div class="footer-brand">
+                    <div class="footer-logo">
+                        <img src="img/logo.png" alt="Logo" class="logo-img"
+                            style="width: 40px; height: 40px; margin-right: 10px;">
+                        <h3>Hair Stylist</h3>
+                    </div>
+                    <p>Experiência premium em cuidados capilares</p>
+                    <div class="social-links">
+                        <a href="#" aria-label="Instagram">
+                            <i class="fab fa-instagram"></i>
+                        </a>
+                        <a href="#" aria-label="Facebook">
+                            <i class="fab fa-facebook"></i>
+                        </a>
+                        <a href="#" aria-label="WhatsApp">
+                            <i class="fab fa-whatsapp"></i>
+                        </a>
+                    </div>
+                </div>
+
+                <div class="footer-links">
+                    <div class="links-group">
+                        <h4>Serviços</h4>
+                        <ul>
+                            <li><a href="#">Progressiva</a></li>
+                            <li><a href="#">Tintura</a></li>
+                            <li><a href="#">Corte</a></li>
+                            <li><a href="#">Botox Capilar</a></li>
+                        </ul>
+                    </div>
+
+                    <div class="links-group">
+                        <h4>Empresa</h4>
+                        <ul>
+                            <li><a href="#">Sobre Nós</a></li>
+                            <li><a href="#">Equipe</a></li>
+                            <li><a href="#">Carreiras</a></li>
+                            <li><a href="#">Contato</a></li>
+                        </ul>
+                    </div>
+
+                    <div class="links-group">
+                        <h4>Contato</h4>
+                        <ul>
+                            <li><i class="fas fa-phone"></i> (11) 9999-9999</li>
+                            <li><i class="fas fa-envelope"></i> contato@studiosylist.com</li>
+                            <li><i class="fas fa-map-marker-alt"></i> São Paulo, SP</li>
+                        </ul>
+                    </div>
+                </div>
+            </div>
+
+            <div class="footer-bottom">
+                <p>&copy; 2026 Hair Stylist. Todos os direitos reservados.</p>
+                <div class="footer-bottom-links">
+                    <a href="#">Política de Privacidade</a>
+                    <a href="#">Termos de Serviço</a>
+                </div>
+            </div>
+        </div>
+    </footer>
+
+    <!-- Modal Meus Agendamentos removido da página inicial (disponível em servicos.html e agendamento.html) -->
+
+    <!-- Scripts -->
+    <script src="js/api-service.js"></script>
+    <script src="js/script.js"></script>
+</body>
+
+</html>

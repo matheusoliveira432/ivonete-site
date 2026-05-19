@@ -1,0 +1,451 @@
+<!DOCTYPE html>
+<html lang="pt-br">
+
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <title>Hair Stylist - Escolha seu Serviço</title>
+    <meta name="description"
+        content="Escolha entre nossos serviços premium: Progressiva, Tintura, Corte, Botox, Selagem e Luzes.">
+
+    <!-- Favicon -->
+    <link rel="icon" type="image/svg+xml"
+        href="data:image/svg+xml,<svg xmlns='http://www.w3.org/2000/svg' viewBox='0 0 100 100'><text y='0.9em' font-size='90'>💇‍♀️</text></svg>">
+
+    <!-- CSS -->
+    <link rel="stylesheet" href="css/style.css">
+
+    <!-- Google Fonts -->
+    <link rel="preconnect" href="https://fonts.googleapis.com">
+    <link rel="preconnect" href="https://fonts.gstatic.com" crossorigin>
+    <link
+        href="https://fonts.googleapis.com/css2?family=Playfair+Display:wght@400;700&family=Montserrat:wght@300;400;500;600;700&display=swap"
+        rel="stylesheet">
+
+    <!-- Font Awesome -->
+    <link rel="stylesheet" href="https://cdnjs.cloudflare.com/ajax/libs/font-awesome/6.4.0/css/all.min.css">
+</head>
+
+<body>
+    <!-- Loading Screen -->
+    <div id="loadingScreen" class="loading-screen">
+        <div class="loading-content">
+            <div class="logo-loader">
+                <img src="img/logo.png" alt="Hair Stylist Logo">
+            </div>
+            <h2>Hair Stylist</h2>
+            <p>Carregando serviços...</p>
+        </div>
+    </div>
+
+    <!-- Navigation Header -->
+    <header class="header-main">
+        <nav class="navbar">
+            <div class="nav-container">
+                <div class="nav-brand">
+                    <div class="logo-icon">
+                        <img src="img/logo.png" alt="Logo" class="logo-img">
+                    </div>
+                    <div class="logo-text">
+                        <h1>Hair Stylist</h1>
+                        <span class="tagline">Experiência Premium</span>
+                    </div>
+                </div>
+
+                <div class="nav-actions">
+                    <button class="btn-back" onclick="history.back()">
+                        <i class="fas fa-arrow-left"></i>
+                        <span>Voltar</span>
+                    </button>
+                    <button class="btn-agendamentos" id="btnMeusAgendamentos">
+                        <i class="fas fa-calendar-check"></i>
+                        <span>Meus Agendamentos</span>
+                    </button>
+                </div>
+            </div>
+        </nav>
+    </header>
+
+    <!-- Breadcrumb -->
+    <div class="breadcrumb">
+        <div class="breadcrumb-container">
+            <a href="index.html" class="breadcrumb-item">
+                <i class="fas fa-home"></i>
+                Início
+            </a>
+            <span class="breadcrumb-separator">
+                <i class="fas fa-chevron-right"></i>
+            </span>
+            <span class="breadcrumb-item active">Serviços</span>
+        </div>
+    </div>
+
+    <!-- Main Content -->
+    <main class="main-content services-main">
+        <!-- Services Hero -->
+        <section class="services-hero">
+            <div class="hero-container">
+                <div class="hero-content">
+                    <div class="hero-progress">
+                        <div class="progress-step completed">
+                            <i class="fas fa-check"></i>
+                            <span>Cadastro</span>
+                        </div>
+                        <div class="progress-line completed"></div>
+                        <div class="progress-step completed">
+                            <i class="fas fa-check"></i>
+                            <span>Verificação</span>
+                        </div>
+                        <div class="progress-line active"></div>
+                        <div class="progress-step active">
+                            <span class="step-number">3</span>
+                            <span>Serviço</span>
+                        </div>
+                        <div class="progress-line"></div>
+                        <div class="progress-step">
+                            <span class="step-number">4</span>
+                            <span>Agenda</span>
+                        </div>
+                    </div>
+
+                    <h1 class="hero-title">Escolha seu serviço premium</h1>
+                    <p class="hero-subtitle">
+                        Selecione o tratamento ideal para transformar seu visual
+                        com atendimento exclusivo e sofisticação
+                    </p>
+                </div>
+            </div>
+        </section>
+
+        <!-- Services Grid -->
+        <section class="services-selection">
+            <div class="services-container">
+                <div class="services-header">
+                    <div class="section-badge">
+                        <i class="fas fa-star"></i>
+                        <span>Serviços Premium</span>
+                    </div>
+                    <h2 class="section-title">Nossos tratamentos exclusivos</h2>
+                    <p class="section-subtitle">
+                        Cada serviço é realizado com técnicas avançadas e produtos de alta qualidade
+                    </p>
+                </div>
+
+                <form id="servicosForm" class="services-form">
+                    <div class="services-grid">
+                        <!-- Progressiva -->
+                        <div class="service-card" data-service="progressiva">
+                            <div class="service-visual">
+                                <img src="img/progressiva.png" alt="Progressiva" class="service-img">
+                                <div class="service-badge popular">
+                                    <i class="fas fa-crown"></i>
+                                    Mais Popular
+                                </div>
+                            </div>
+
+                            <div class="service-content">
+                                <input type="radio" id="progressiva" name="servico" value="Progressiva"
+                                    class="service-radio">
+                                <label for="progressiva" class="service-label">
+                                    <h3 class="service-title">Progressiva</h3>
+                                    <div class="service-description">
+                                        <p>Alisamento capilar duradouro com produtos importados</p>
+                                        <ul class="service-features">
+                                            <li><i class="fas fa-check"></i> Duração de 3-6 meses</li>
+                                            <li><i class="fas fa-check"></i> Efeito liso natural</li>
+                                            <li><i class="fas fa-check"></i> Produtos premium</li>
+                                        </ul>
+                                    </div>
+                                    <div class="service-meta">
+                                        <div class="service-duration">
+                                            <i class="fas fa-clock"></i>
+                                            <span>2h 30min</span>
+                                        </div>
+                                        <div class="service-price">
+                                            <span class="price-label">A partir de</span>
+                                            <span class="price-value">R$ 350</span>
+                                        </div>
+                                    </div>
+                                </label>
+                            </div>
+                        </div>
+
+                        <!-- Tintura -->
+                        <div class="service-card" data-service="tintura">
+                            <div class="service-visual">
+                                <img src="img/tintura.png" alt="Tintura" class="service-img">
+                                <div class="service-badge new">
+                                    <i class="fas fa-sparkles"></i>
+                                    Novidade
+                                </div>
+                            </div>
+
+                            <div class="service-content">
+                                <input type="radio" id="tintura" name="servico" value="Tintura" class="service-radio">
+                                <label for="tintura" class="service-label">
+                                    <h3 class="service-title">Tintura</h3>
+                                    <div class="service-description">
+                                        <p>Coloração profissional com tons vibrantes e duradouros</p>
+                                        <ul class="service-features">
+                                            <li><i class="fas fa-check"></i> Cores personalizadas</li>
+                                            <li><i class="fas fa-check"></i> Produtos sem amônia</li>
+                                            <li><i class="fas fa-check"></i> Brilho intenso</li>
+                                        </ul>
+                                    </div>
+                                    <div class="service-meta">
+                                        <div class="service-duration">
+                                            <i class="fas fa-clock"></i>
+                                            <span>2h</span>
+                                        </div>
+                                        <div class="service-price">
+                                            <span class="price-label">A partir de</span>
+                                            <span class="price-value">R$ 180</span>
+                                        </div>
+                                    </div>
+                                </label>
+                            </div>
+                        </div>
+
+                        <!-- Corte -->
+                        <div class="service-card" data-service="corte">
+                            <div class="service-visual">
+                                <img src="img/corte.png" alt="Corte" class="service-img">
+                                <div class="service-badge classic">
+                                    <i class="fas fa-gem"></i>
+                                    Clássico
+                                </div>
+                            </div>
+
+                            <div class="service-content">
+                                <input type="radio" id="corte" name="servico" value="Corte" class="service-radio">
+                                <label for="corte" class="service-label">
+                                    <h3 class="service-title">Corte</h3>
+                                    <div class="service-description">
+                                        <p>Corte personalizado com técnicas modernas de styling</p>
+                                        <ul class="service-features">
+                                            <li><i class="fas fa-check"></i> Consulta de estilo</li>
+                                            <li><i class="fas fa-check"></i> Finalização completa</li>
+                                            <li><i class="fas fa-check"></i> Dicas de cuidados</li>
+                                        </ul>
+                                    </div>
+                                    <div class="service-meta">
+                                        <div class="service-duration">
+                                            <i class="fas fa-clock"></i>
+                                            <span>1h</span>
+                                        </div>
+                                        <div class="service-price">
+                                            <span class="price-label">A partir de</span>
+                                            <span class="price-value">R$ 80</span>
+                                        </div>
+                                    </div>
+                                </label>
+                            </div>
+                        </div>
+
+                        <!-- Botox -->
+                        <div class="service-card" data-service="botox">
+                            <div class="service-visual">
+                                <img src="img/botox.png" alt="Botox Capilar" class="service-img">
+                                <div class="service-badge premium">
+                                    <i class="fas fa-crown"></i>
+                                    Premium
+                                </div>
+                            </div>
+
+                            <div class="service-content">
+                                <input type="radio" id="botox" name="servico" value="Botox" class="service-radio">
+                                <label for="botox" class="service-label">
+                                    <h3 class="service-title">Botox Capilar</h3>
+                                    <div class="service-description">
+                                        <p>Tratamento reconstrutor com efeito liso e brilho intenso</p>
+                                        <ul class="service-features">
+                                            <li><i class="fas fa-check"></i> Reconstrução profunda</li>
+                                            <li><i class="fas fa-check"></i> Redução de frizz</li>
+                                            <li><i class="fas fa-check"></i> Brilho espelhado</li>
+                                        </ul>
+                                    </div>
+                                    <div class="service-meta">
+                                        <div class="service-duration">
+                                            <i class="fas fa-clock"></i>
+                                            <span>2h</span>
+                                        </div>
+                                        <div class="service-price">
+                                            <span class="price-label">A partir de</span>
+                                            <span class="price-value">R$ 280</span>
+                                        </div>
+                                    </div>
+                                </label>
+                            </div>
+                        </div>
+
+                        <!-- Selagem -->
+                        <div class="service-card" data-service="selagem">
+                            <div class="service-visual">
+                                <img src="img/selagem.png" alt="Selagem" class="service-img">
+                                <div class="service-badge treatment">
+                                    <i class="fas fa-leaf"></i>
+                                    Tratamento
+                                </div>
+                            </div>
+
+                            <div class="service-content">
+                                <input type="radio" id="selagem" name="servico" value="Selagem" class="service-radio">
+                                <label for="selagem" class="service-label">
+                                    <h3 class="service-title">Selagem</h3>
+                                    <div class="service-description">
+                                        <p>Proteção térmica e nutrição para cabelos danificados</p>
+                                        <ul class="service-features">
+                                            <li><i class="fas fa-check"></i> Reparação de danos</li>
+                                            <li><i class="fas fa-check"></i> Proteção térmica</li>
+                                            <li><i class="fas fa-check"></i> Maciez intensa</li>
+                                        </ul>
+                                    </div>
+                                    <div class="service-meta">
+                                        <div class="service-duration">
+                                            <i class="fas fa-clock"></i>
+                                            <span>1h 30min</span>
+                                        </div>
+                                        <div class="service-price">
+                                            <span class="price-label">A partir de</span>
+                                            <span class="price-value">R$ 150</span>
+                                        </div>
+                                    </div>
+                                </label>
+                            </div>
+                        </div>
+
+                        <!-- Luzes -->
+                        <div class="service-card" data-service="luzes">
+                            <div class="service-visual">
+                                <img src="img/luzes.png" alt="Luzes" class="service-img">
+                                <div class="service-badge trending">
+                                    <i class="fas fa-fire"></i>
+                                    Trending
+                                </div>
+                            </div>
+
+                            <div class="service-content">
+                                <input type="radio" id="luzes" name="servico" value="Luzes" class="service-radio">
+                                <label for="luzes" class="service-label">
+                                    <h3 class="service-title">Luzes</h3>
+                                    <div class="service-description">
+                                        <p>Mechas e luzes com técnicas modernas e naturais</p>
+                                        <ul class="service-features">
+                                            <li><i class="fas fa-check"></i> Efeito natural</li>
+                                            <li><i class="fas fa-check"></i> Várias técnicas</li>
+                                            <li><i class="fas fa-check"></i> Harmonia facial</li>
+                                        </ul>
+                                    </div>
+                                    <div class="service-meta">
+                                        <div class="service-duration">
+                                            <i class="fas fa-clock"></i>
+                                            <span>3h</span>
+                                        </div>
+                                        <div class="service-price">
+                                            <span class="price-label">A partir de</span>
+                                            <span class="price-value">R$ 250</span>
+                                        </div>
+                                    </div>
+                                </label>
+                            </div>
+                        </div>
+                    </div>
+
+                    <!-- Service Selection Info -->
+                    <div class="selection-info" id="selectionInfo" style="display: none;">
+                        <div class="info-content">
+                            <div class="info-icon">
+                                <i class="fas fa-info-circle"></i>
+                            </div>
+                            <div class="info-text">
+                                <h4>Serviço Selecionado</h4>
+                                <p id="selectedServiceName">-</p>
+                            </div>
+                        </div>
+                    </div>
+
+                    <!-- Form Actions -->
+                    <div class="form-actions">
+                        <button type="button" class="btn-secondary" onclick="history.back()">
+                            <i class="fas fa-arrow-left"></i>
+                            <span>Voltar</span>
+                        </button>
+                        <button type="submit" class="btn-primary btn-submit" id="btnProximo" disabled>
+                            <span class="btn-text">Avançar para Agendamento</span>
+                            <i class="fas fa-arrow-right"></i>
+                        </button>
+                    </div>
+                </form>
+            </div>
+        </section>
+
+        <!-- Additional Info -->
+        <section class="additional-info">
+            <div class="info-container">
+                <div class="info-cards">
+                    <div class="info-card">
+                        <div class="info-icon">
+                            <i class="fas fa-award"></i>
+                        </div>
+                        <h3>Qualidade Garantida</h3>
+                        <p>Trabalhamos apenas com produtos originais e certificados</p>
+                    </div>
+
+                    <div class="info-card">
+                        <div class="info-icon">
+                            <i class="fas fa-user-tie"></i>
+                        </div>
+                        <h3>Especialista Dedicada</h3>
+                        <p>Profissional treinada nas técnicas mais recentes do mercado</p>
+                    </div>
+
+                    <div class="info-card">
+                        <div class="info-icon">
+                            <i class="fas fa-heart"></i>
+                        </div>
+                        <h3>Cuidados Personalizados</h3>
+                        <p>Tratamento personalizado para cada tipo de cabelo</p>
+                    </div>
+                </div>
+            </div>
+        </section>
+    </main>
+
+    <!-- Modal Meus Agendamentos -->
+    <div id="modalAgendamentos" class="modal-overlay">
+        <div class="modal-container">
+            <div class="modal-header">
+                <h2 class="modal-title">
+                    <i class="fas fa-calendar-check"></i>
+                    Meus Agendamentos
+                </h2>
+                <button class="modal-close" id="closeModal">
+                    <i class="fas fa-times"></i>
+                </button>
+            </div>
+
+            <div class="modal-body">
+                <div id="listaAgendamentos" class="agendamentos-list">
+                    <!-- Agendamentos serão inseridos aqui dinamicamente -->
+                </div>
+
+                <div id="emptyState" class="empty-state" style="display: none;">
+                    <div class="empty-icon">
+                        <i class="fas fa-calendar-times"></i>
+                    </div>
+                    <h3>Nenhum agendamento</h3>
+                    <p>Você ainda não possui agendamentos marcados.</p>
+                    <button class="btn-primary" onclick="app.handleNewAppointment()">
+                        Agendar Horário
+                    </button>
+                </div>
+            </div>
+        </div>
+    </div>
+
+    <!-- Scripts -->
+    <script src="js/api-service.js"></script>
+    <script src="js/script.js"></script>
+</body>
+
+</html>

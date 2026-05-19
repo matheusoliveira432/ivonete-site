@@ -1,0 +1,207 @@
+<!DOCTYPE html>
+<html lang="pt-br">
+
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <title>Hair Stylist - Verificação SMS</title>
+    <meta name="description" content="Verifique seu telefone para acessar o sistema de agendamentos premium.">
+
+    <!-- Favicon -->
+    <link rel="icon" type="image/svg+xml"
+        href="data:image/svg+xml,<svg xmlns='http://www.w3.org/2000/svg' viewBox='0 0 100 100'><text y='0.9em' font-size='90'>💇‍♀️</text></svg>">
+
+    <!-- CSS -->
+    <link rel="stylesheet" href="css/style.css">
+
+    <!-- Google Fonts -->
+    <link rel="preconnect" href="https://fonts.googleapis.com">
+    <link rel="preconnect" href="https://fonts.gstatic.com" crossorigin>
+    <link
+        href="https://fonts.googleapis.com/css2?family=Playfair+Display:wght@400;700&family=Montserrat:wght@300;400;500;600;700&display=swap"
+        rel="stylesheet">
+
+    <!-- Font Awesome -->
+    <link rel="stylesheet" href="https://cdnjs.cloudflare.com/ajax/libs/font-awesome/6.4.0/css/all.min.css">
+</head>
+
+<body>
+    <!-- Loading Screen -->
+    <div id="loadingScreen" class="loading-screen">
+        <div class="loading-content">
+            <div class="logo-loader">
+                <img src="img/logo.png" alt="Hair Stylist Logo">
+            </div>
+            <h2>Hair Stylist</h2>
+            <p>Enviando código de verificação...</p>
+        </div>
+    </div>
+
+    <!-- Navigation Header -->
+    <header class="header-main">
+        <nav class="navbar">
+            <div class="nav-container">
+                <div class="nav-brand">
+                    <div class="logo-icon">
+                        <img src="img/logo.png" alt="Logo" class="logo-img">
+                    </div>
+                    <div class="logo-text">
+                        <h1>Hair Stylist</h1>
+                        <span class="tagline">Experiência Premium</span>
+                    </div>
+                </div>
+
+                <div class="nav-actions">
+                    <button class="btn-back" onclick="window.location.href='index.html'">
+                        <i class="fas fa-arrow-left"></i>
+                        <span>Voltar</span>
+                    </button>
+                </div>
+            </div>
+        </nav>
+    </header>
+
+    <!-- Breadcrumb -->
+    <div class="breadcrumb">
+        <div class="breadcrumb-container">
+            <a href="index.html" class="breadcrumb-item">
+                <i class="fas fa-home"></i>
+                Início
+            </a>
+            <span class="breadcrumb-separator">
+                <i class="fas fa-chevron-right"></i>
+            </span>
+            <span class="breadcrumb-item active">Verificação SMS</span>
+        </div>
+    </div>
+
+    <!-- Main Content -->
+    <main class="main-content">
+        <!-- OTP Hero -->
+        <section class="services-hero">
+            <div class="hero-container">
+                <div class="hero-content" style="display: block; text-align: center;">
+                    <div class="hero-progress">
+                        <div class="progress-step completed">
+                            <i class="fas fa-check"></i>
+                            <span>Cadastro</span>
+                        </div>
+                        <div class="progress-line active"></div>
+                        <div class="progress-step active">
+                            <span class="step-number"><i class="fas fa-shield-alt" style="font-size:0.8rem"></i></span>
+                            <span>Verificação</span>
+                        </div>
+                        <div class="progress-line"></div>
+                        <div class="progress-step">
+                            <span class="step-number">3</span>
+                            <span>Serviço</span>
+                        </div>
+                        <div class="progress-line"></div>
+                        <div class="progress-step">
+                            <span class="step-number">4</span>
+                            <span>Agenda</span>
+                        </div>
+                    </div>
+
+                    <h1 class="hero-title" style="font-size:2.5rem; margin-bottom:0.5rem;">Verificação de Telefone</h1>
+                    <p class="hero-subtitle" style="opacity:1; animation:none;">
+                        Enviamos um código de verificação para o seu telefone
+                    </p>
+                </div>
+            </div>
+        </section>
+
+        <!-- OTP Verification Section -->
+        <section class="registration-section" style="padding-top: 1rem;">
+            <div class="section-container">
+                <div style="display: flex; justify-content: center; width: 100%;">
+                    <div class="form-wrapper" style="max-width: 500px; width: 100%; text-align: center;">
+
+                        <!-- Phone Info Display -->
+                        <div class="otp-phone-display" id="otpPhoneDisplay">
+                            <div class="otp-phone-icon">
+                                <i class="fas fa-mobile-alt"></i>
+                            </div>
+                            <div class="otp-phone-info">
+                                <span class="otp-phone-label">Código enviado para:</span>
+                                <span class="otp-phone-number" id="otpPhoneNumber">(99) 99999-9999</span>
+                            </div>
+                        </div>
+
+                        <!-- Timer Display -->
+                        <div class="otp-timer" id="otpTimer">
+                            <i class="fas fa-clock"></i>
+                            <span id="otpTimerText">Código expira em 5:00</span>
+                        </div>
+
+                        <!-- OTP Input -->
+                        <div class="otp-input-container" id="otpInputContainer">
+                            <label class="otp-label">Digite o código de 6 dígitos</label>
+                            <div class="otp-inputs" id="otpInputs">
+                                <input type="tel" class="otp-digit" maxlength="1" inputmode="numeric" pattern="[0-9]*" autocomplete="one-time-code" aria-label="Dígito 1">
+                                <input type="tel" class="otp-digit" maxlength="1" inputmode="numeric" pattern="[0-9]*" aria-label="Dígito 2">
+                                <input type="tel" class="otp-digit" maxlength="1" inputmode="numeric" pattern="[0-9]*" aria-label="Dígito 3">
+                                <input type="tel" class="otp-digit" maxlength="1" inputmode="numeric" pattern="[0-9]*" aria-label="Dígito 4">
+                                <input type="tel" class="otp-digit" maxlength="1" inputmode="numeric" pattern="[0-9]*" aria-label="Dígito 5">
+                                <input type="tel" class="otp-digit" maxlength="1" inputmode="numeric" pattern="[0-9]*" aria-label="Dígito 6">
+                            </div>
+                        </div>
+
+                        <!-- Feedback Messages -->
+                        <div class="otp-feedback" id="otpFeedback" style="display: none;">
+                            <i class="fas fa-info-circle"></i>
+                            <span id="otpFeedbackText"></span>
+                        </div>
+
+                        <!-- Action Buttons -->
+                        <div class="otp-actions">
+                            <button type="button" class="btn-primary btn-submit otp-verify-btn" id="btnVerificar">
+                                <i class="fas fa-shield-alt"></i>
+                                <span class="btn-text">Verificar Código</span>
+                            </button>
+                        </div>
+
+                        <!-- Resend Section -->
+                        <div class="otp-resend-section">
+                            <p class="otp-resend-text">Não recebeu o código?</p>
+                            <button type="button" class="otp-resend-btn" id="btnReenviar">
+                                <i class="fas fa-redo-alt"></i>
+                                <span id="resendBtnText">Reenviar código</span>
+                            </button>
+                            <p class="otp-resend-count" id="resendCount" style="display:none;">
+                                <i class="fas fa-info-circle"></i>
+                                <span id="resendCountText"></span>
+                            </p>
+                        </div>
+
+                        <!-- Dev Helper (code display for testing) -->
+                        <div class="otp-dev-helper" id="otpDevHelper">
+                            <div class="otp-dev-header">
+                                <i class="fas fa-bug"></i>
+                                <span>Modo Demonstração</span>
+                            </div>
+                            <p>Como este é um ambiente de demonstração, o código SMS é exibido abaixo:</p>
+                            <div class="otp-dev-code" id="otpDevCode">------</div>
+                        </div>
+
+                    </div>
+                </div>
+            </div>
+        </section>
+    </main>
+
+    <!-- Footer -->
+    <footer class="footer-main">
+        <div class="footer-container">
+            <div class="footer-bottom">
+                <p>&copy; 2026 Hair Stylist. Todos os direitos reservados.</p>
+            </div>
+        </div>
+    </footer>
+
+    <!-- Scripts -->
+    <script src="js/otp-service.js"></script>
+    <script src="js/otp-page.js"></script>
+</body>
+
+</html>

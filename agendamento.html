@@ -1,0 +1,705 @@
+<!DOCTYPE html>
+<html lang="pt-br">
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <title>Hair Stylist - Agendamento</title>
+    <meta name="description" content="Escolha dia e horário para seu agendamento no Hair Stylist.">
+    
+    <!-- Favicon -->
+    <link rel="icon" type="image/svg+xml" href="data:image/svg+xml,<svg xmlns='http://www.w3.org/2000/svg' viewBox='0 0 100 100'><text y='0.9em' font-size='90'>💇‍♀️</text></svg>">
+    
+    <!-- CSS -->
+    <link rel="stylesheet" href="css/style.css">
+    
+    <!-- Google Fonts -->
+    <link rel="preconnect" href="https://fonts.googleapis.com">
+    <link rel="preconnect" href="https://fonts.gstatic.com" crossorigin>
+    <link href="https://fonts.googleapis.com/css2?family=Playfair+Display:wght@400;700&family=Montserrat:wght@300;400;500;600;700&display=swap" rel="stylesheet">
+    
+    <!-- Font Awesome -->
+    <link rel="stylesheet" href="https://cdnjs.cloudflare.com/ajax/libs/font-awesome/6.4.0/css/all.min.css">
+
+    <!-- Estilos do Modal de Confirmação -->
+    <style>
+        /* Modal de Confirmação */
+        .confirm-modal {
+            display: none;
+            position: fixed;
+            top: 0;
+            left: 0;
+            width: 100%;
+            height: 100%;
+            z-index: 10000;
+            align-items: center;
+            justify-content: center;
+        }
+
+        .confirm-modal.active {
+            display: flex;
+        }
+
+        .confirm-overlay {
+            position: absolute;
+            top: 0;
+            left: 0;
+            width: 100%;
+            height: 100%;
+            background: rgba(0, 0, 0, 0.8);
+            backdrop-filter: blur(5px);
+        }
+
+        .confirm-content {
+            position: relative;
+            background: linear-gradient(135deg, #1a1a1a 0%, #2d2d2d 100%);
+            border: 2px solid #BFA03B;
+            border-radius: 16px;
+            padding: 2rem;
+            max-width: 400px;
+            width: 90%;
+            box-shadow: 0 20px 40px rgba(0, 0, 0, 0.5);
+            animation: confirmSlideIn 0.3s ease-out;
+        }
+
+        .confirm-header {
+            display: flex;
+            align-items: center;
+            gap: 1rem;
+            margin-bottom: 1.5rem;
+        }
+
+        .confirm-icon {
+            font-size: 2rem;
+            color: #BFA03B;
+        }
+
+        .confirm-title {
+            color: #ffffff;
+            font-size: 1.25rem;
+            font-weight: 600;
+            margin: 0;
+            font-family: 'Montserrat', sans-serif;
+        }
+
+        .confirm-body {
+            margin-bottom: 2rem;
+        }
+
+        .confirm-body p {
+            color: #cccccc;
+            margin: 0 0 0.5rem;
+            line-height: 1.5;
+            font-family: 'Montserrat', sans-serif;
+        }
+
+        .confirm-subtitle {
+            font-size: 0.875rem;
+            color: #BFA03B !important;
+            font-weight: 500;
+        }
+
+        .confirm-actions {
+            display: flex;
+            gap: 1rem;
+            justify-content: flex-end;
+        }
+
+        .btn-confirm-cancel,
+        .btn-confirm-delete {
+            display: flex;
+            align-items: center;
+            gap: 0.5rem;
+            padding: 0.75rem 1.5rem;
+            border: none;
+            border-radius: 8px;
+            font-size: 0.875rem;
+            font-weight: 500;
+            cursor: pointer;
+            transition: all 0.3s ease;
+            min-height: 44px; /* Área de toque mínima */
+            font-family: 'Montserrat', sans-serif;
+        }
+
+        .btn-confirm-cancel {
+            background: #444444;
+            color: #cccccc;
+            border: 1px solid #555555;
+        }
+
+        .btn-confirm-cancel:hover {
+            background: #555555;
+            color: #ffffff;
+            transform: translateY(-2px);
+        }
+
+        .btn-confirm-delete {
+            background: linear-gradient(135deg, #dc3545, #c82333);
+            color: white;
+            border: 1px solid #dc3545;
+        }
+
+        .btn-confirm-delete:hover {
+            background: linear-gradient(135deg, #c82333, #b21f2d);
+            transform: translateY(-2px);
+            box-shadow: 0 8px 16px rgba(220, 53, 69, 0.3);
+        }
+
+        @keyframes confirmSlideIn {
+            from {
+                opacity: 0;
+                transform: translateX(100%);
+            }
+            to {
+                opacity: 1;
+                transform: translateX(0);
+            }
+        }
+
+        /* Estilo para horários ocupados */
+        .time-slot.ocupado {
+            background: #8B0000 !important; /* Vermelho fosco */
+            border-color: #8B0000 !important;
+            color: #FFD700 !important; /* Dourado para contraste */
+            cursor: not-allowed !important;
+            pointer-events: none !important;
+            opacity: 1 !important;
+        }
+
+        .time-slot.ocupado .status {
+            color: #FFD700 !important; /* Dourado para contraste */
+        }
+
+        /* Estilo para horários ocupados (visual de card) */
+        .time-slot.horario-ocupado {
+            background: #8B0000 !important; /* Vermelho escuro */
+            border-color: #8B0000 !important;
+            color: #ffffff !important;
+            cursor: not-allowed !important;
+            pointer-events: none !important;
+            opacity: 1 !important;
+            transition: none !important;
+            min-height: 80px; /* Altura mínima para caber duas linhas */
+            display: flex !important;
+            flex-direction: column !important;
+            justify-content: center !important;
+            align-items: center !important;
+        }
+
+        .time-slot.horario-ocupado:hover {
+            background: #8B0000 !important;
+            transform: none !important;
+            box-shadow: none !important;
+            border-color: #8B0000 !important;
+        }
+
+        .time-slot.horario-ocupado .time {
+            color: #ffffff !important;
+            font-weight: 500 !important;
+            font-size: 0.9rem !important; /* Igual ao day-btn */
+            margin-bottom: 2px !important;
+            font-family: 'Montserrat', sans-serif !important;
+        }
+
+        .time-slot.horario-ocupado .status {
+            color: #ffffff !important;
+            font-size: 0.75rem !important;
+            opacity: 1 !important;
+            font-weight: 400 !important;
+            font-family: 'Montserrat', sans-serif !important;
+        }
+
+        /* Estilo para horários disponíveis (idêntico aos day-btn) */
+        .time-slot:not(.horario-ocupado) {
+            background: var(--quinary-black) !important; /* Igual ao day-btn */
+            border: 2px solid var(--secondary-gray) !important; /* Igual ao day-btn */
+            border-radius: var(--border-radius-lg) !important; /* Igual ao day-btn */
+            color: var(--pale-gray) !important; /* Igual ao day-btn */
+            font-weight: 500 !important; /* Igual ao day-btn */
+            font-size: 0.9rem !important; /* Igual ao day-btn */
+            cursor: pointer !important;
+            transition: var(--transition-normal) !important;
+            display: flex !important;
+            flex-direction: column !important;
+            align-items: center !important;
+            justify-content: center !important;
+            text-align: center !important;
+            white-space: nowrap !important;
+            min-height: 80px; /* Altura mínima para caber duas linhas */
+            pointer-events: auto !important;
+        }
+
+        .time-slot:not(.horario-ocupado):hover {
+            border-color: var(--primary-gold) !important; /* Igual ao day-btn */
+            color: var(--primary-gold) !important; /* Igual ao day-btn */
+            transform: scale(1.05) !important; /* Igual ao day-btn */
+            background: var(--quinary-black) !important; /* Mantém transparente */
+        }
+
+        .time-slot:not(.horario-ocupado):hover .time,
+        .time-slot:not(.horario-ocupado):hover .status {
+            color: var(--primary-gold) !important; /* Texto amarelo/dourado no hover */
+        }
+
+        .time-slot:not(.horario-ocupado).selected {
+            background: var(--primary-gold) !important; /* Igual ao day-btn */
+            border-color: var(--primary-gold) !important; /* Igual ao day-btn */
+            color: var(--primary-black) !important; /* Igual ao day-btn */
+            transform: none !important; /* Remove scale quando selecionado */
+        }
+
+        .time-slot:not(.horario-ocupado) .time {
+            color: var(--pale-gray) !important; /* Igual ao day-btn */
+            font-weight: 500 !important; /* Igual ao day-btn */
+            font-size: 0.9rem !important; /* Igual ao day-btn */
+            margin-bottom: 2px !important;
+            font-family: 'Montserrat', sans-serif !important;
+        }
+
+        .time-slot:not(.horario-ocupado) .status {
+            color: var(--pale-gray) !important; /* Igual ao day-btn */
+            font-size: 0.75rem !important;
+            opacity: 0.8 !important;
+            font-weight: 400 !important;
+            font-family: 'Montserrat', sans-serif !important;
+        }
+
+        /* Ajuste de cor para horário selecionado */
+        .time-slot:not(.horario-ocupado).selected .time,
+        .time-slot:not(.horario-ocupado).selected .status {
+            color: var(--primary-black) !important; /* Texto preto quando selecionado */
+        }
+
+        /* Responsividade do Modal de Confirmação */
+        @media (max-width: 480px) {
+            .confirm-content {
+                width: 95%;
+                padding: 1.5rem;
+            }
+
+            .confirm-actions {
+                flex-direction: column;
+                gap: 0.75rem;
+            }
+
+            .btn-confirm-cancel,
+            .btn-confirm-delete {
+                width: 100%;
+                justify-content: center;
+            }
+        }
+    </style>
+</head>
+<body>
+    <!-- Loading Screen -->
+    <div id="loadingScreen" class="loading-screen">
+        <div class="loading-content">
+            <div class="logo-loader">
+                <img src="img/logo.png" alt="Hair Stylist Logo">
+            </div>
+            <h2>Hair Stylist</h2>
+            <p>Preparando agenda...</p>
+        </div>
+    </div>
+
+    <!-- Navigation Header -->
+    <header class="header-main">
+        <nav class="navbar">
+            <div class="nav-container">
+                <div class="nav-brand">
+                    <div class="logo-icon">
+                        <img src="img/logo.png" alt="Logo" class="logo-img">
+                    </div>
+                    <div class="logo-text">
+                        <h1>Hair Stylist</h1>
+                        <span class="tagline">Experiência Premium</span>
+                    </div>
+                </div>
+                
+                <div class="nav-actions">
+                    <button class="btn-back" onclick="history.back()">
+                        <i class="fas fa-arrow-left"></i>
+                        <span>Voltar</span>
+                    </button>
+                    <button class="btn-agendamentos" id="btnMeusAgendamentos">
+                        <i class="fas fa-calendar-check"></i>
+                        <span>Meus Agendamentos</span>
+                    </button>
+                </div>
+            </div>
+        </nav>
+    </header>
+
+    <!-- Breadcrumb -->
+    <div class="breadcrumb">
+        <div class="breadcrumb-container">
+            <a href="index.html" class="breadcrumb-item">
+                <i class="fas fa-home"></i>
+                Início
+            </a>
+            <span class="breadcrumb-separator">
+                <i class="fas fa-chevron-right"></i>
+            </span>
+            <a href="servicos.html" class="breadcrumb-item">
+                Serviços
+            </a>
+            <span class="breadcrumb-separator">
+                <i class="fas fa-chevron-right"></i>
+            </span>
+            <span class="breadcrumb-item active">Agendamento</span>
+        </div>
+    </div>
+
+    <!-- Main Content -->
+    <main class="main-content scheduling-main">
+        <!-- Scheduling Hero -->
+        <section class="scheduling-hero">
+            <div class="hero-container">
+                <div class="hero-content">
+                    <div class="hero-progress">
+                        <div class="progress-step completed">
+                            <i class="fas fa-check"></i>
+                            <span>Cadastro</span>
+                        </div>
+                        <div class="progress-line completed"></div>
+                        <div class="progress-step completed">
+                            <i class="fas fa-check"></i>
+                            <span>Serviço</span>
+                        </div>
+                        <div class="progress-line active"></div>
+                        <div class="progress-step active">
+                            <span class="step-number">3</span>
+                            <span>Agenda</span>
+                        </div>
+                    </div>
+                    
+                    <h1 class="hero-title">Escolha sua data e horário</h1>
+                    <p class="hero-subtitle">
+                        Selecione a data e horário mais convenientes 
+                        para seu tratamento premium
+                    </p>
+                    
+                    <!-- Selected Service Display -->
+                    <div class="selected-service-display" id="selectedServiceDisplay">
+                        <div class="service-info">
+                            <div class="service-icon">
+                                <i class="fas fa-star"></i>
+                            </div>
+                            <div class="service-details">
+                                <span class="service-label">Serviço Selecionado:</span>
+                                <span class="service-name" id="selectedServiceName">-</span>
+                            </div>
+                        </div>
+                    </div>
+                </div>
+            </div>
+        </section>
+
+        <!-- Date Selection -->
+        <section class="date-selection">
+            <div class="scheduling-container">
+                <div class="section-header">
+                    <div class="section-badge">
+                        <i class="fas fa-calendar-day"></i>
+                        <span>Selecione a Data</span>
+                    </div>
+                    <h2 class="section-title">Quando você gostaria de vir?</h2>
+                    <p class="section-subtitle">
+                        Segundas e Domingos não atendemos. Escolha de terça a sábado.
+                    </p>
+                </div>
+
+                <div class="calendar-container">
+                    <div class="calendar-header">
+                        <h3 class="calendar-title" id="calendarTitle">-</h3>
+                    </div>
+
+                    <div class="calendar-grid">
+                        <div class="weekdays">
+                            <div class="weekday">Ter</div>
+                            <div class="weekday">Qua</div>
+                            <div class="weekday">Qui</div>
+                            <div class="weekday">Sex</div>
+                            <div class="weekday">Sáb</div>
+                        </div>
+                        <div class="days-grid" id="daysGrid">
+                            <!-- Dias serão gerados dinamicamente -->
+                        </div>
+                    </div>
+                </div>
+            </div>
+        </section>
+
+        <!-- Time Selection -->
+        <section class="time-selection">
+            <div class="scheduling-container">
+                <div class="section-header">
+                    <div class="section-badge">
+                        <i class="fas fa-clock"></i>
+                        <span>Horários Disponíveis</span>
+                    </div>
+                    <h2 class="section-title">Que horas você prefere?</h2>
+                </div>
+
+                <div class="time-slots-container">
+                    <div class="time-periods">
+                        <div class="time-period">
+                            <h4 class="period-title">
+                                <i class="fas fa-sun"></i>
+                                Manhã
+                            </h4>
+                            <div class="time-slots morning-slots">
+                                <button class="time-slot" data-time="09:00">
+                                    <span class="time">09:00</span>
+                                    <span class="status">Disponível</span>
+                                </button>
+                                <button class="time-slot" data-time="10:00">
+                                    <span class="time">10:00</span>
+                                    <span class="status">Disponível</span>
+                                </button>
+                                <button class="time-slot" data-time="11:00">
+                                    <span class="time">11:00</span>
+                                    <span class="status">Disponível</span>
+                                </button>
+                            </div>
+                        </div>
+
+                        <div class="time-period">
+                            <h4 class="period-title">
+                                <i class="fas fa-cloud-sun"></i>
+                                Tarde
+                            </h4>
+                            <div class="time-slots afternoon-slots">
+                                <button class="time-slot" data-time="14:00">
+                                    <span class="time">14:00</span>
+                                    <span class="status">Disponível</span>
+                                </button>
+                                <button class="time-slot" data-time="15:00">
+                                    <span class="time">15:00</span>
+                                    <span class="status">Disponível</span>
+                                </button>
+                                <button class="time-slot" data-time="16:00">
+                                    <span class="time">16:00</span>
+                                    <span class="status">Disponível</span>
+                                </button>
+                                <button class="time-slot" data-time="16:30">
+                                    <span class="time">16:30</span>
+                                    <span class="status">Disponível</span>
+                                </button>
+                                <button class="time-slot" data-time="17:00">
+                                    <span class="time">17:00</span>
+                                    <span class="status">Disponível</span>
+                                </button>
+                            </div>
+                        </div>
+
+                        <div class="time-period">
+                            <h4 class="period-title">
+                                <i class="fas fa-moon"></i>
+                                Noite
+                            </h4>
+                            <div class="time-slots evening-slots">
+                                <button class="time-slot" data-time="18:00">
+                                    <span class="time">18:00</span>
+                                    <span class="status">Disponível</span>
+                                </button>
+                                <button class="time-slot" data-time="19:00">
+                                    <span class="time">19:00</span>
+                                    <span class="status">Disponível</span>
+                                </button>
+                                <button class="time-slot" data-time="20:00">
+                                    <span class="time">20:00</span>
+                                    <span class="status">Disponível</span>
+                                </button>
+                            </div>
+                        </div>
+                    </div>
+                </div>
+                </div>
+            </div>
+        </section>
+
+        <!-- Selection Summary -->
+        <section class="selection-summary" id="selectionSummary">
+            <div class="summary-container">
+                <div class="summary-card">
+                    <div class="summary-header">
+                        <h3 class="summary-title">
+                            <i class="fas fa-clipboard"></i>
+                            Resumo da Seleção
+                        </h3>
+                    </div>
+                    
+                    <div class="summary-content">
+                        <div class="summary-item">
+                            <div class="item-dot"></div>
+                            <div class="item-details">
+                                <span class="item-value" id="summaryService">Serviço Selecionado: -</span>
+                            </div>
+                        </div>
+                        
+                        <div class="summary-item">
+                            <div class="item-dot"></div>
+                            <div class="item-details">
+                                <span class="item-value" id="summaryDate">Data Escolhida: -</span>
+                            </div>
+                        </div>
+                        
+                        <div class="summary-item">
+                            <div class="item-dot"></div>
+                            <div class="item-details">
+                                <span class="item-value" id="summaryTime">Horário Escolhido: -</span>
+                            </div>
+                        </div>
+                    </div>
+                    
+                    <div class="summary-actions">
+                        <button type="button" class="btn-primary" id="confirmarAgendamento">
+                            <i class="fas fa-check-circle"></i>
+                            <span>Confirmar Agendamento</span>
+                        </button>
+                    </div>
+                </div>
+            </div>
+        </section>
+    </main>
+
+    <!-- Modal Resumo do Agendamento -->
+    <div id="modalResumo" class="modal-overlay">
+        <div class="modal-container modal-resumo">
+            <div class="modal-header">
+                <h2 class="modal-title">
+                    <i class="fas fa-calendar-check"></i>
+                    Confirmar Agendamento
+                </h2>
+                <button class="modal-close" id="closeModalResumo">
+                    <i class="fas fa-times"></i>
+                </button>
+            </div>
+            
+            <div class="modal-body">
+                <div class="resumo-card">
+                    <div class="resumo-header">
+                        <div class="resumo-icon">
+                            <i class="fas fa-star"></i>
+                        </div>
+                        <h3>Resumo do Agendamento</h3>
+                    </div>
+                    
+                    <div class="resumo-content">
+                        <div class="resumo-item">
+                            <div class="resumo-label">Serviço:</div>
+                            <div class="resumo-value" id="resumoServico">-</div>
+                        </div>
+                        
+                        <div class="resumo-item">
+                            <div class="resumo-label">Data:</div>
+                            <div class="resumo-value" id="resumoData">-</div>
+                        </div>
+                        
+                        <div class="resumo-item">
+                            <div class="resumo-label">Horário:</div>
+                            <div class="resumo-value" id="resumoHorario">-</div>
+                        </div>
+                        
+                        <div class="resumo-item">
+                            <div class="resumo-label">Cliente:</div>
+                            <div class="resumo-value" id="resumoCliente">-</div>
+                        </div>
+                    </div>
+                    
+                    <div class="resumo-actions">
+                        <button type="button" class="btn-secondary" id="cancelarResumo">
+                            <i class="fas fa-arrow-left"></i>
+                            <span>Voltar</span>
+                        </button>
+                        <button type="button" class="btn-primary" id="confirmarResumo">
+                            <i class="fas fa-check"></i>
+                            <span>Confirmar Agendamento</span>
+                        </button>
+                    </div>
+                </div>
+            </div>
+        </div>
+    </div>
+
+    <!-- Modal Meus Agendamentos -->
+    <div id="modalAgendamentos" class="modal-overlay">
+        <div class="modal-container">
+            <div class="modal-header">
+                <h2 class="modal-title">
+                    <i class="fas fa-calendar-check"></i>
+                    Meus Agendamentos
+                </h2>
+                <button class="modal-close" id="closeModal">
+                    <i class="fas fa-times"></i>
+                </button>
+            </div>
+            
+            <div class="modal-body">
+                <div id="listaAgendamentos" class="agendamentos-list">
+                    <!-- Agendamentos serão inseridos aqui dinamicamente -->
+                </div>
+                
+                <div id="emptyState" class="empty-state" style="display: none;">
+                    <div class="empty-icon">
+                        <i class="fas fa-calendar-times"></i>
+                    </div>
+                    <h3>Nenhum agendamento</h3>
+                    <p>Você ainda não possui agendamentos marcados.</p>
+                    <button class="btn-primary" onclick="app.handleNewAppointment()">
+                        Agendar Horário
+                    </button>
+                </div>
+            </div>
+        </div>
+    </div>
+
+    <!-- Success Modal -->
+    <div id="successModal" class="modal-overlay">
+        <div class="modal-container modal-success">
+            <div class="success-content">
+                <div class="success-icon">
+                    <i class="fas fa-check-circle"></i>
+                </div>
+                <h2>Agendamento Confirmado!</h2>
+                <p>Seu agendamento foi realizado com sucesso. 
+                   Você receberá um e-mail de confirmação em breve.</p>
+                <button type="button" class="btn-primary" id="btnSuccessOk">
+                    <i class="fas fa-home"></i>
+                    <span>Voltar ao Início</span>
+                </button>
+            </div>
+        </div>
+    </div>
+
+    <!-- Scripts -->
+    <script src="js/api-service.js"></script>
+    <script src="js/script.js"></script>
+
+    <!-- Modal de Confirmação de Exclusão -->
+    <div class="confirm-modal" id="confirmModal">
+        <div class="confirm-overlay"></div>
+        <div class="confirm-content">
+            <div class="confirm-header">
+                <i class="fas fa-exclamation-triangle confirm-icon"></i>
+                <h3 class="confirm-title">Confirmar Exclusão</h3>
+            </div>
+            <div class="confirm-body">
+                <p>Tem certeza que deseja cancelar este agendamento?</p>
+                <p class="confirm-subtitle">Esta ação não poderá ser desfeita.</p>
+            </div>
+            <div class="confirm-actions">
+                <button class="btn-confirm-cancel" id="btnConfirmCancel">
+                    <i class="fas fa-times"></i>
+                    Não, manter
+                </button>
+                <button class="btn-confirm-delete" id="btnConfirmDelete">
+                    <i class="fas fa-trash"></i>
+                    Sim, cancelar
+                </button>
+            </div>
+        </div>
+    </div>
+
+</body>
+</html>
