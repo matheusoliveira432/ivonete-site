@@ -58,28 +58,61 @@ class HairStylistApp {
         this.dataSelecionada = null;
         this.horarioSelecionado = null;
         
-        // Carregar dados do cliente
-        const clienteDados = localStorage.getItem('clienteDados');
-        if (clienteDados) {
+        // ---- Tentar obter dados do cliente via URL Query primeiro ----
+        const params = new URLSearchParams(window.location.search);
+        const qNome = params.get('nome');
+        const qEmail = params.get('email');
+        const qTelefone = params.get('telefone');
+
+        if (qNome && qTelefone) {
+            this.clienteDados = {
+                nome: decodeURIComponent(qNome),
+                email: qEmail ? decodeURIComponent(qEmail) : '',
+                telefone: decodeURIComponent(qTelefone)
+            };
+            console.log('Dados do cliente carregados via URL:', this.clienteDados);
             try {
-                this.clienteDados = JSON.parse(clienteDados);
-                console.log('Dados do cliente carregados:', this.clienteDados);
-            } catch (error) {
-                console.error('Erro ao carregar dados do cliente:', error);
-                localStorage.removeItem('clienteDados');
+                localStorage.setItem('clienteDados', JSON.stringify(this.clienteDados));
+            } catch (e) {
+                console.warn('Erro ao salvar clienteDados no localStorage:', e);
             }
         } else {
-            console.log('Nenhum dado de cliente encontrado');
+            // Carregar dados do cliente do localStorage
+            const clienteDados = localStorage.getItem('clienteDados');
+            if (clienteDados) {
+                try {
+                    this.clienteDados = JSON.parse(clienteDados);
+                    console.log('Dados do cliente carregados:', this.clienteDados);
+                } catch (error) {
+                    console.error('Erro ao carregar dados do cliente:', error);
+                    localStorage.removeItem('clienteDados');
+                }
+            } else {
+                console.log('Nenhum dado de cliente encontrado');
+            }
         }
 
-        // Carregar serviço selecionado
-        const servicoSelecionado = localStorage.getItem('servicoSelecionado');
-        if (servicoSelecionado) {
-            this.servicoSelecionado = servicoSelecionado;
-            console.log('Serviço selecionado carregado:', this.servicoSelecionado);
+        // ---- Tentar obter serviço selecionado via URL Query primeiro ----
+        const qServico = params.get('servico');
+        if (qServico) {
+            this.servicoSelecionado = decodeURIComponent(qServico);
+            console.log('Serviço selecionado carregado via URL:', this.servicoSelecionado);
+            try {
+                localStorage.setItem('servicoSelecionado', this.servicoSelecionado);
+            } catch (e) {
+                console.warn('Erro ao salvar servicoSelecionado no localStorage:', e);
+            }
             this.updateSelectedServiceDisplay();
         } else {
-            console.log('Nenhum serviço selecionado encontrado');
+            // Carregar serviço selecionado do localStorage
+            const servicoSelecionado = localStorage.getItem('servicoSelecionado');
+            if (servicoSelecionado) {
+                this.servicoSelecionado = servicoSelecionado;
+                console.log('Serviço selecionado carregado:', this.servicoSelecionado);
+                this.updateSelectedServiceDisplay();
+            } else {
+                console.log('Nenhum serviço selecionado encontrado');
+            }
         }
         
         // Nota: dataSelecionada e horarioSelecionado são temporários
@@ -253,9 +286,9 @@ class HairStylistApp {
                 if (value.length < 3) {
                     isValid = false;
                     errorMessage = 'Nome deve ter pelo menos 3 caracteres';
-                } else if (!/^[a-zA-Z\s]+$/.test(value)) {
+                } else if (!/^[a-zA-ZÀ-ÿ\s'-]+$/.test(value)) {
                     isValid = false;
-                    errorMessage = 'Nome deve conter apenas letras';
+                    errorMessage = 'Nome deve conter apenas letras e espaços';
                 }
                 break;
 
@@ -268,10 +301,10 @@ class HairStylistApp {
                 break;
 
             case 'telefone':
-                const telefoneRegex = /^\(\d{2}\)\s\d{5}-\d{4}$/;
+                const telefoneRegex = /^\(\d{2}\)\s\d{4,5}-\d{4}$/;
                 if (!telefoneRegex.test(value)) {
                     isValid = false;
-                    errorMessage = 'Telefone deve estar no formato (99) 99999-9999';
+                    errorMessage = 'Telefone deve estar no formato (99) 99999-9999 ou (99) 9999-9999';
                 }
                 break;
         }
@@ -369,11 +402,16 @@ class HairStylistApp {
             window.otpService.clearVerification();
         }
 
-        // Mostrar sucesso e redirecionar para VERIFICAÇÃO SMS
+        // Mostrar sucesso e redirecionar para VERIFICAÇÃO SMS com parâmetros de URL
+        // Isso previne que políticas estritas de file:/// do navegador percam o localStorage
         this.showNotification('Enviando código de verificação...', 'info');
         
+        const qNome = encodeURIComponent(nome);
+        const qEmail = encodeURIComponent(email);
+        const qTelefone = encodeURIComponent(telefone);
+        
         setTimeout(() => {
-            window.location.href = 'verificacao.html';
+            window.location.href = `verificacao.html?nome=${qNome}&email=${qEmail}&telefone=${qTelefone}`;
         }, 1500);
     }
 
@@ -394,8 +432,13 @@ class HairStylistApp {
         // Mostrar sucesso e redirecionar
         this.showNotification('Serviço selecionado com sucesso!', 'success');
         
+        const qNome = this.clienteDados ? encodeURIComponent(this.clienteDados.nome) : '';
+        const qEmail = this.clienteDados ? encodeURIComponent(this.clienteDados.email) : '';
+        const qTelefone = this.clienteDados ? encodeURIComponent(this.clienteDados.telefone) : '';
+        const qServico = encodeURIComponent(this.servicoSelecionado);
+        
         setTimeout(() => {
-            window.location.href = 'agendamento.html';
+            window.location.href = `agendamento.html?nome=${qNome}&email=${qEmail}&telefone=${qTelefone}&servico=${qServico}`;
         }, 1500);
     }
 
@@ -418,58 +461,125 @@ class HairStylistApp {
     }
 
     initializeServices() {
+        const servicesGrid = document.querySelector('.services-grid');
+        if (!servicesGrid) return;
+
+        // Carregar serviços do localStorage
+        let storedServices = localStorage.getItem('salonServices');
+        let services = [];
+        if (storedServices) {
+            try {
+                services = JSON.parse(storedServices);
+            } catch (e) {
+                console.error('Erro ao fazer parse dos serviços:', e);
+            }
+        }
+
+        // Se não houver serviços no localStorage, povoar com os padrões
+        if (services.length === 0) {
+            services = [
+                { id: 'progressiva', nome: 'Progressiva', descricao: 'Alisamento capilar duradouro com produtos importados', duracao: '2h 30min', preco: '350', status: 'ativo' },
+                { id: 'tintura', nome: 'Tintura', descricao: 'Coloração profissional com tons vibrantes e duradouros', duracao: '2h', preco: '180', status: 'ativo' },
+                { id: 'corte', nome: 'Corte', descricao: 'Corte personalizado com técnicas modernas de styling', duracao: '1h', preco: '80', status: 'ativo' },
+                { id: 'botox', nome: 'Botox Capilar', descricao: 'Tratamento reconstrutor com efeito liso e brilho intenso', duracao: '2h', preco: '280', status: 'ativo' },
+                { id: 'selagem', nome: 'Selagem', descricao: 'Proteção térmica e nutrição para cabelos danificados', duracao: '1h 30min', preco: '150', status: 'ativo' },
+                { id: 'luzes', nome: 'Luzes', descricao: 'Mechas e luzes com técnicas modernas e naturais', duracao: '3h', preco: '250', status: 'ativo' }
+            ];
+            localStorage.setItem('salonServices', JSON.stringify(services));
+        }
+
+        // Filtrar apenas os serviços ativos para exibição ao cliente
+        const activeServices = services.filter(s => s.status === 'ativo');
+
+        // Renderizar dinamicamente
+        servicesGrid.innerHTML = '';
+        activeServices.forEach(service => {
+            // Badges específicos baseados no ID do serviço
+            let badgeHTML = '';
+            if (service.id === 'progressiva') {
+                badgeHTML = `<div class="service-badge popular"><i class="fas fa-crown"></i> Mais Popular</div>`;
+            } else if (service.id === 'tintura') {
+                badgeHTML = `<div class="service-badge new"><i class="fas fa-sparkles"></i> Novidade</div>`;
+            } else if (service.id === 'corte') {
+                badgeHTML = `<div class="service-badge classic"><i class="fas fa-gem"></i> Clássico</div>`;
+            } else if (service.id === 'botox') {
+                badgeHTML = `<div class="service-badge premium"><i class="fas fa-crown"></i> Premium</div>`;
+            } else if (service.id === 'selagem') {
+                badgeHTML = `<div class="service-badge treatment"><i class="fas fa-leaf"></i> Tratamento</div>`;
+            } else if (service.id === 'luzes') {
+                badgeHTML = `<div class="service-badge trending"><i class="fas fa-fire"></i> Trending</div>`;
+            }
+
+            // Tratar imagem e fallback
+            let imgPath = `img/${service.id}.png`;
+            if (!['progressiva', 'tintura', 'corte', 'botox', 'selagem', 'luzes'].includes(service.id)) {
+                imgPath = `img/corte.png`;
+            }
+
+            const card = document.createElement('div');
+            card.className = 'service-card';
+            card.dataset.service = service.id;
+
+            card.innerHTML = `
+                <div class="service-visual">
+                    <img src="${imgPath}" alt="${service.nome}" class="service-img" onerror="this.src='img/corte.png'">
+                    ${badgeHTML}
+                </div>
+                <div class="service-content">
+                    <input type="radio" id="${service.id}" name="servico" value="${service.nome}" class="service-radio">
+                    <label for="${service.id}" class="service-label">
+                        <h3 class="service-title">${service.nome}</h3>
+                        <div class="service-description">
+                            <p>${service.descricao || ''}</p>
+                        </div>
+                        <div class="service-meta">
+                            <div class="service-duration">
+                                <i class="fas fa-clock"></i>
+                                <span>${service.duracao || '1h'}</span>
+                            </div>
+                            <div class="service-price">
+                                <span class="price-label">A partir de</span>
+                                <span class="price-value">R$ ${service.preco || '0'}</span>
+                            </div>
+                        </div>
+                    </label>
+                </div>
+            `;
+            servicesGrid.appendChild(card);
+        });
+
+        // Configurar os seletores de evento
         const serviceCards = document.querySelectorAll('.service-card');
         const btnProximo = document.getElementById('btnProximo');
         const selectionInfo = document.getElementById('selectionInfo');
 
-        // Evento de clique nos cards
         serviceCards.forEach(card => {
             card.addEventListener('click', () => {
-                // Remover seleção anterior
                 serviceCards.forEach(c => c.classList.remove('selected'));
-                
-                // Adicionar seleção atual
                 card.classList.add('selected');
                 
-                // Marcar o radio button
                 const radio = card.querySelector('input[type="radio"]');
                 if (radio) {
                     radio.checked = true;
-                }
-                
-                // Habilitar botão próximo
-                if (btnProximo) {
-                    btnProximo.disabled = false;
-                }
-
-                // Mostrar informação da seleção
-                if (selectionInfo && radio) {
-                    const serviceName = radio.value;
-                    document.getElementById('selectedServiceName').textContent = serviceName;
-                    selectionInfo.style.display = 'block';
+                    // Disparar evento de mudança no radio button
+                    radio.dispatchEvent(new Event('change'));
                 }
             });
         });
 
-        // Evento de clique nos radio buttons
         const radioButtons = document.querySelectorAll('input[name="servico"]');
         radioButtons.forEach(radio => {
             radio.addEventListener('change', () => {
-                // Remover seleção visual anterior
                 serviceCards.forEach(c => c.classList.remove('selected'));
-                
-                // Adicionar seleção visual ao card do radio marcado
                 const card = radio.closest('.service-card');
                 if (card) {
                     card.classList.add('selected');
                 }
                 
-                // Habilitar botão próximo
                 if (btnProximo) {
                     btnProximo.disabled = false;
                 }
 
-                // Mostrar informação da seleção
                 if (selectionInfo) {
                     document.getElementById('selectedServiceName').textContent = radio.value;
                     selectionInfo.style.display = 'block';
@@ -477,7 +587,6 @@ class HairStylistApp {
             });
         });
 
-        // Efeito hover nos cards
         serviceCards.forEach(card => {
             card.addEventListener('mouseenter', () => {
                 if (!card.classList.contains('selected')) {

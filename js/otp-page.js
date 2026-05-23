@@ -28,12 +28,33 @@ function showToast(message, type) {
 document.addEventListener('DOMContentLoaded', function () {
     console.log('OTP Page carregada');
 
-    // ---- Dados do cliente ----
-    var raw = localStorage.getItem('clienteDados');
+    // ---- Dados do cliente (URL Query ou LocalStorage) ----
+    var params = new URLSearchParams(window.location.search);
+    var qNome = params.get('nome');
+    var qEmail = params.get('email');
+    var qTelefone = params.get('telefone');
+
     var clienteDados = null;
-    try { clienteDados = JSON.parse(raw); } catch (e) { }
+
+    if (qNome && qTelefone) {
+        clienteDados = {
+            nome: decodeURIComponent(qNome),
+            email: qEmail ? decodeURIComponent(qEmail) : '',
+            telefone: decodeURIComponent(qTelefone)
+        };
+        // Salvar no localStorage para persistência em outras abas
+        try {
+            localStorage.setItem('clienteDados', JSON.stringify(clienteDados));
+        } catch (e) {
+            console.warn('Falha ao gravar no localStorage, usando memória local:', e);
+        }
+    } else {
+        var raw = localStorage.getItem('clienteDados');
+        try { clienteDados = JSON.parse(raw); } catch (e) { }
+    }
 
     if (!clienteDados || !clienteDados.telefone) {
+        console.warn('Dados do cliente não encontrados. Redirecionando para o cadastro.');
         window.location.href = 'index.html';
         return;
     }
@@ -195,7 +216,10 @@ document.addEventListener('DOMContentLoaded', function () {
                 }
 
                 setTimeout(function () {
-                    window.location.href = 'servicos.html';
+                    var qNome = encodeURIComponent(clienteDados.nome);
+                    var qEmail = encodeURIComponent(clienteDados.email || '');
+                    var qTelefone = encodeURIComponent(clienteDados.telefone);
+                    window.location.href = 'servicos.html?nome=' + qNome + '&email=' + qEmail + '&telefone=' + qTelefone;
                 }, 2000);
 
             } else {

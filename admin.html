@@ -948,6 +948,406 @@
                 justify-content: center;
             }
         }
+
+        /* =================================================================
+           NAVEGAÇÃO ADMIN (ABAS)
+           ================================================================= */
+        .admin-nav {
+            display: flex;
+            gap: var(--spacing-sm);
+            margin-top: var(--spacing-md);
+            justify-content: center;
+        }
+
+        .admin-nav-btn {
+            padding: var(--spacing-sm) var(--spacing-lg);
+            background: var(--quinary-black);
+            border: 2px solid var(--secondary-gray);
+            border-radius: var(--border-radius-lg);
+            color: var(--pale-gray);
+            cursor: pointer;
+            transition: all 0.3s ease;
+            font-size: 0.95rem;
+            font-weight: 500;
+            display: flex;
+            align-items: center;
+            gap: var(--spacing-sm);
+        }
+
+        .admin-nav-btn:hover {
+            border-color: var(--primary-gold);
+            color: var(--primary-gold);
+            transform: translateY(-2px);
+        }
+
+        .admin-nav-btn.active {
+            background: linear-gradient(135deg, var(--primary-gold), var(--secondary-gold));
+            color: var(--primary-black);
+            border-color: var(--primary-gold);
+            font-weight: 600;
+        }
+
+        /* =================================================================
+           SEÇÃO DE GERENCIAMENTO DE SERVIÇOS
+           ================================================================= */
+        .services-manager {
+            display: none;
+        }
+
+        .services-manager.active {
+            display: block;
+        }
+
+        .svm-header {
+            display: flex;
+            justify-content: space-between;
+            align-items: center;
+            margin-bottom: var(--spacing-lg);
+            flex-wrap: wrap;
+            gap: var(--spacing-md);
+        }
+
+        .svm-title {
+            font-size: 1.5rem;
+            color: var(--primary-gold);
+            display: flex;
+            align-items: center;
+            gap: var(--spacing-sm);
+        }
+
+        .btn-add-service {
+            padding: var(--spacing-sm) var(--spacing-lg);
+            background: linear-gradient(135deg, var(--primary-gold), var(--secondary-gold));
+            border: none;
+            border-radius: var(--border-radius-lg);
+            color: var(--primary-black);
+            cursor: pointer;
+            font-weight: 600;
+            font-size: 0.9rem;
+            display: flex;
+            align-items: center;
+            gap: var(--spacing-sm);
+            transition: all 0.3s ease;
+        }
+
+        .btn-add-service:hover {
+            transform: translateY(-2px);
+            box-shadow: 0 8px 20px rgba(183, 110, 121, 0.4);
+        }
+
+        /* Cards de Serviço no Admin */
+        .svm-grid {
+            display: grid;
+            grid-template-columns: repeat(auto-fill, minmax(320px, 1fr));
+            gap: var(--spacing-lg);
+        }
+
+        .svm-card {
+            background: var(--quinary-black);
+            border: 1px solid var(--primary-gray);
+            border-radius: var(--border-radius-xl);
+            padding: var(--spacing-lg);
+            transition: all 0.3s ease;
+            position: relative;
+        }
+
+        .svm-card:hover {
+            border-color: var(--primary-gold);
+            transform: translateY(-3px);
+            box-shadow: 0 8px 24px rgba(0, 0, 0, 0.3);
+        }
+
+        .svm-card.disabled {
+            opacity: 0.5;
+            border-color: var(--secondary-gray);
+        }
+
+        .svm-card-header {
+            display: flex;
+            justify-content: space-between;
+            align-items: flex-start;
+            margin-bottom: var(--spacing-md);
+        }
+
+        .svm-card-name {
+            font-size: 1.2rem;
+            color: var(--primary-gold);
+            font-weight: 600;
+            margin-bottom: 4px;
+        }
+
+        .svm-card-badge {
+            padding: 4px 10px;
+            border-radius: 20px;
+            font-size: 0.7rem;
+            font-weight: 600;
+            text-transform: uppercase;
+        }
+
+        .svm-card-badge.ativo {
+            background: rgba(40, 167, 69, 0.2);
+            color: #28a745;
+            border: 1px solid rgba(40, 167, 69, 0.3);
+        }
+
+        .svm-card-badge.inativo {
+            background: rgba(220, 53, 69, 0.2);
+            color: #dc3545;
+            border: 1px solid rgba(220, 53, 69, 0.3);
+        }
+
+        .svm-card-desc {
+            color: var(--light-gray);
+            font-size: 0.85rem;
+            margin-bottom: var(--spacing-md);
+            line-height: 1.5;
+        }
+
+        .svm-card-meta {
+            display: flex;
+            gap: var(--spacing-lg);
+            margin-bottom: var(--spacing-md);
+            flex-wrap: wrap;
+        }
+
+        .svm-meta-item {
+            display: flex;
+            align-items: center;
+            gap: var(--spacing-xs);
+            font-size: 0.85rem;
+            color: var(--pale-gray);
+        }
+
+        .svm-meta-item i {
+            color: var(--primary-gold);
+            font-size: 0.8rem;
+        }
+
+        .svm-card-actions {
+            display: flex;
+            gap: var(--spacing-sm);
+            padding-top: var(--spacing-md);
+            border-top: 1px solid var(--primary-gray);
+            flex-wrap: wrap;
+        }
+
+        .svm-btn {
+            padding: 8px 14px;
+            border: none;
+            border-radius: var(--border-radius-md);
+            cursor: pointer;
+            font-size: 0.8rem;
+            font-weight: 500;
+            display: flex;
+            align-items: center;
+            gap: 6px;
+            transition: all 0.2s ease;
+            flex: 1;
+            justify-content: center;
+            min-height: 40px;
+        }
+
+        .svm-btn-edit {
+            background: rgba(0, 123, 255, 0.15);
+            color: #4dabf7;
+            border: 1px solid rgba(0, 123, 255, 0.3);
+        }
+
+        .svm-btn-edit:hover {
+            background: rgba(0, 123, 255, 0.3);
+        }
+
+        .svm-btn-toggle {
+            background: rgba(255, 152, 0, 0.15);
+            color: #ffb74d;
+            border: 1px solid rgba(255, 152, 0, 0.3);
+        }
+
+        .svm-btn-toggle:hover {
+            background: rgba(255, 152, 0, 0.3);
+        }
+
+        .svm-btn-delete {
+            background: rgba(220, 53, 69, 0.15);
+            color: #ff6b6b;
+            border: 1px solid rgba(220, 53, 69, 0.3);
+        }
+
+        .svm-btn-delete:hover {
+            background: rgba(220, 53, 69, 0.3);
+        }
+
+        /* Modal de Serviço */
+        .svm-modal {
+            display: none;
+            position: fixed;
+            top: 0;
+            left: 0;
+            width: 100%;
+            height: 100%;
+            background: rgba(0, 0, 0, 0.85);
+            z-index: 20000;
+            align-items: center;
+            justify-content: center;
+            backdrop-filter: blur(8px);
+        }
+
+        .svm-modal.active {
+            display: flex;
+        }
+
+        .svm-modal-content {
+            background: var(--quaternary-black);
+            border: 2px solid var(--primary-gold);
+            border-radius: 16px;
+            max-width: 520px;
+            width: 92%;
+            max-height: 90vh;
+            overflow-y: auto;
+            padding: var(--spacing-xl);
+            animation: confirmSlideIn 0.3s ease-out;
+        }
+
+        .svm-modal-title {
+            color: var(--primary-gold);
+            font-size: 1.3rem;
+            margin-bottom: var(--spacing-lg);
+            display: flex;
+            align-items: center;
+            gap: var(--spacing-sm);
+        }
+
+        .svm-form-group {
+            margin-bottom: var(--spacing-md);
+        }
+
+        .svm-form-group label {
+            display: block;
+            color: var(--light-gold);
+            font-size: 0.85rem;
+            font-weight: 500;
+            margin-bottom: 6px;
+        }
+
+        .svm-form-group input,
+        .svm-form-group textarea,
+        .svm-form-group select {
+            width: 100%;
+            padding: 12px 14px;
+            background: var(--quinary-black);
+            border: 1px solid var(--secondary-gray);
+            border-radius: var(--border-radius-md);
+            color: var(--pale-gray);
+            font-family: inherit;
+            font-size: 0.9rem;
+            transition: border-color 0.3s ease;
+        }
+
+        .svm-form-group input:focus,
+        .svm-form-group textarea:focus,
+        .svm-form-group select:focus {
+            outline: none;
+            border-color: var(--primary-gold);
+        }
+
+        .svm-form-group textarea {
+            resize: vertical;
+            min-height: 70px;
+        }
+
+        .svm-form-row {
+            display: grid;
+            grid-template-columns: 1fr 1fr;
+            gap: var(--spacing-md);
+        }
+
+        .svm-modal-actions {
+            display: flex;
+            gap: var(--spacing-md);
+            margin-top: var(--spacing-lg);
+        }
+
+        .svm-modal-btn {
+            flex: 1;
+            padding: 12px;
+            border: none;
+            border-radius: var(--border-radius-md);
+            cursor: pointer;
+            font-weight: 600;
+            font-size: 0.9rem;
+            transition: all 0.2s ease;
+            min-height: 44px;
+        }
+
+        .svm-modal-btn-save {
+            background: linear-gradient(135deg, var(--primary-gold), var(--secondary-gold));
+            color: var(--primary-black);
+        }
+
+        .svm-modal-btn-save:hover {
+            transform: translateY(-2px);
+            box-shadow: 0 6px 16px rgba(183, 110, 121, 0.4);
+        }
+
+        .svm-modal-btn-cancel {
+            background: var(--quinary-black);
+            color: var(--light-gray);
+            border: 1px solid var(--secondary-gray);
+        }
+
+        .svm-modal-btn-cancel:hover {
+            border-color: var(--pale-gray);
+            color: var(--pale-gray);
+        }
+
+        /* Empty state */
+        .svm-empty {
+            text-align: center;
+            padding: var(--spacing-xxxl);
+            color: var(--tertiary-gray);
+        }
+
+        .svm-empty i {
+            font-size: 3rem;
+            margin-bottom: var(--spacing-md);
+            color: var(--secondary-gray);
+        }
+
+        /* Responsivo Serviços */
+        @media (max-width: 768px) {
+            .admin-nav {
+                flex-direction: column;
+            }
+            .admin-nav-btn {
+                justify-content: center;
+            }
+            .svm-grid {
+                grid-template-columns: 1fr;
+            }
+            .svm-header {
+                flex-direction: column;
+                align-items: stretch;
+            }
+            .btn-add-service {
+                justify-content: center;
+            }
+            .svm-form-row {
+                grid-template-columns: 1fr;
+            }
+            .svm-modal-content {
+                width: 96%;
+                padding: var(--spacing-lg);
+            }
+        }
+
+        @media (max-width: 480px) {
+            .svm-card-actions {
+                flex-direction: column;
+            }
+            .svm-modal-actions {
+                flex-direction: column;
+            }
+        }
     </style>
 </head>
 
@@ -973,44 +1373,75 @@
                     Painel Administrativo
                 </h1>
                 <p class="hero-subtitle">Agenda Digital - Visão Completa</p>
-            </div>
-
-            <!-- Tabela Semanal -->
-            <div class="schedule-section">
-                <div class="schedule-header">
-                    <h2 class="schedule-title">
+                <div class="admin-nav">
+                    <button class="admin-nav-btn active" id="btnNavAgenda" onclick="switchAdminTab('agenda')">
                         <i class="fas fa-calendar-week"></i>
                         Agenda Semanal
-                    </h2>
-                    <div class="week-navigation">
-                        <button class="week-btn" id="prevWeek">
-                            <i class="fas fa-chevron-left"></i>
-                            Semana Anterior
-                        </button>
-                        <div class="week-display" id="weekDisplay">Semana Atual</div>
-                        <button class="week-btn" id="nextWeek">
-                            Próxima Semana
-                            <i class="fas fa-chevron-right"></i>
-                        </button>
+                    </button>
+                    <button class="admin-nav-btn" id="btnNavServicos" onclick="switchAdminTab('servicos')">
+                        <i class="fas fa-scissors"></i>
+                        Gerenciar Serviços
+                    </button>
+                </div>
+            </div>
+
+            <!-- TELA 1: Tabela Semanal -->
+            <div id="viewAgenda" class="admin-view">
+                <div class="schedule-section">
+                    <div class="schedule-header">
+                        <h2 class="schedule-title">
+                            <i class="fas fa-calendar-week"></i>
+                            Agenda Semanal
+                        </h2>
+                        <div class="week-navigation">
+                            <button class="week-btn" id="prevWeek">
+                                <i class="fas fa-chevron-left"></i>
+                                Semana Anterior
+                            </button>
+                            <div class="week-display" id="weekDisplay">Semana Atual</div>
+                            <button class="week-btn" id="nextWeek">
+                                Próxima Semana
+                                <i class="fas fa-chevron-right"></i>
+                            </button>
+                        </div>
+                    </div>
+
+                    <div class="table-container">
+                        <table class="schedule-table" id="scheduleTable">
+                            <thead>
+                                <tr>
+                                    <th>Horários</th>
+                                    <th>Terça-feira</th>
+                                    <th>Quarta-feira</th>
+                                    <th>Quinta-feira</th>
+                                    <th>Sexta-feira</th>
+                                    <th>Sábado</th>
+                                </tr>
+                            </thead>
+                            <tbody id="scheduleBody">
+                                <!-- Tabela será gerada dinamicamente -->
+                            </tbody>
+                        </table>
                     </div>
                 </div>
+            </div>
 
-                <div class="table-container">
-                    <table class="schedule-table" id="scheduleTable">
-                        <thead>
-                            <tr>
-                                <th>Horários</th>
-                                <th>Terça-feira</th>
-                                <th>Quarta-feira</th>
-                                <th>Quinta-feira</th>
-                                <th>Sexta-feira</th>
-                                <th>Sábado</th>
-                            </tr>
-                        </thead>
-                        <tbody id="scheduleBody">
-                            <!-- Tabela será gerada dinamicamente -->
-                        </tbody>
-                    </table>
+            <!-- TELA 2: Gerenciamento de Serviços -->
+            <div id="viewServicos" class="services-manager">
+                <div class="schedule-section">
+                    <div class="svm-header">
+                        <h2 class="svm-title">
+                            <i class="fas fa-scissors"></i>
+                            Serviços Cadastrados
+                        </h2>
+                        <button class="btn-add-service" id="btnAddService">
+                            <i class="fas fa-plus"></i>
+                            Novo Serviço
+                        </button>
+                    </div>
+                    <div class="svm-grid" id="svmGrid">
+                        <!-- Cards serão gerados dinamicamente -->
+                    </div>
                 </div>
             </div>
         </div>
@@ -1026,7 +1457,6 @@
                 </button>
             </div>
             <div class="modal-body" id="modalBody">
-                <!-- Detalhes e botões serão inseridos dinamicamente -->
             </div>
         </div>
     </div>
@@ -1049,6 +1479,75 @@
                     Não, manter
                 </button>
                 <button class="btn-confirm-delete" id="btnConfirmDelete">
+                    <i class="fas fa-trash"></i>
+                    Sim, excluir
+                </button>
+            </div>
+        </div>
+    </div>
+
+    <!-- Modal de Criar/Editar Serviço -->
+    <div class="svm-modal" id="svmModal">
+        <div class="svm-modal-content">
+            <h3 class="svm-modal-title" id="svmModalTitle">
+                <i class="fas fa-plus-circle"></i>
+                <span>Novo Serviço</span>
+            </h3>
+            <form id="svmForm">
+                <input type="hidden" id="svmId">
+                <div class="svm-form-group">
+                    <label for="svmNome">Nome do Serviço *</label>
+                    <input type="text" id="svmNome" placeholder="Ex: Progressiva" required>
+                </div>
+                <div class="svm-form-group">
+                    <label for="svmDescricao">Descrição</label>
+                    <textarea id="svmDescricao" placeholder="Descrição do serviço..."></textarea>
+                </div>
+                <div class="svm-form-row">
+                    <div class="svm-form-group">
+                        <label for="svmDuracao">Duração</label>
+                        <input type="text" id="svmDuracao" placeholder="Ex: 2h 30min">
+                    </div>
+                    <div class="svm-form-group">
+                        <label for="svmPreco">Preço (R$)</label>
+                        <input type="text" id="svmPreco" placeholder="Ex: 350">
+                    </div>
+                </div>
+                <div class="svm-form-group">
+                    <label for="svmStatus">Status</label>
+                    <select id="svmStatus">
+                        <option value="ativo">Ativo (visível para clientes)</option>
+                        <option value="inativo">Inativo (oculto para clientes)</option>
+                    </select>
+                </div>
+                <div class="svm-modal-actions">
+                    <button type="button" class="svm-modal-btn svm-modal-btn-cancel" id="svmBtnCancel">Cancelar</button>
+                    <button type="submit" class="svm-modal-btn svm-modal-btn-save">
+                        <i class="fas fa-save"></i> Salvar
+                    </button>
+                </div>
+            </form>
+        </div>
+    </div>
+
+    <!-- Modal de Confirmação de Exclusão de Serviço -->
+    <div class="confirm-modal" id="svmConfirmModal">
+        <div class="confirm-overlay"></div>
+        <div class="confirm-content">
+            <div class="confirm-header">
+                <i class="fas fa-exclamation-triangle confirm-icon"></i>
+                <h3 class="confirm-title">Excluir Serviço</h3>
+            </div>
+            <div class="confirm-body">
+                <p>Tem certeza que deseja excluir este serviço?</p>
+                <p class="confirm-subtitle">Esta ação não poderá ser desfeita.</p>
+            </div>
+            <div class="confirm-actions">
+                <button class="btn-confirm-cancel" id="svmConfirmCancel">
+                    <i class="fas fa-times"></i>
+                    Não, manter
+                </button>
+                <button class="btn-confirm-delete" id="svmConfirmDelete">
                     <i class="fas fa-trash"></i>
                     Sim, excluir
                 </button>

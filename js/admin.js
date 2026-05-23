@@ -10,6 +10,8 @@ class AdminPanel {
         this.currentWeekOffset = 0;
         this.appointments = [];
         this.selectedAppointment = null;
+        this.services = [];
+        this.selectedServiceToDelete = null;
         this.init();
     }
 
@@ -23,7 +25,9 @@ class AdminPanel {
         console.log('Dia da semana de hoje:', today.getDay()); // 0=Domingo, 1=Segunda...
 
         this.hideLoadingScreen();
+        this.loadServices();
         this.setupEventListeners();
+        this.setupServiceEventListeners();
         this.generateScheduleTable();
         this.loadAppointments();
         this.updateWeekDisplay();
@@ -879,6 +883,275 @@ class AdminPanel {
         };
         return icons[type] || icons.info;
     }
+
+    // =================================================================
+    // SERVIÇOS - CRUD & GERENCIAMENTO
+    // =================================================================
+
+    loadServices() {
+        try {
+            const stored = localStorage.getItem('salonServices');
+            if (stored) {
+                this.services = JSON.parse(stored);
+            } else {
+                // Inicializar com serviços padrão
+                this.services = [
+                    { id: 'progressiva', nome: 'Progressiva', descricao: 'Alisamento capilar duradouro com produtos importados', duracao: '2h 30min', preco: '350', status: 'ativo' },
+                    { id: 'tintura', nome: 'Tintura', descricao: 'Coloração profissional com tons vibrantes e duradouros', duracao: '2h', preco: '180', status: 'ativo' },
+                    { id: 'corte', nome: 'Corte', descricao: 'Corte personalizado com técnicas modernas de styling', duracao: '1h', preco: '80', status: 'ativo' },
+                    { id: 'botox', nome: 'Botox Capilar', descricao: 'Tratamento reconstrutor com efeito liso e brilho intenso', duracao: '2h', preco: '280', status: 'ativo' },
+                    { id: 'selagem', nome: 'Selagem', descricao: 'Proteção térmica e nutrição para cabelos danificados', duracao: '1h 30min', preco: '150', status: 'ativo' },
+                    { id: 'luzes', nome: 'Luzes', descricao: 'Mechas e luzes com técnicas modernas e naturais', duracao: '3h', preco: '250', status: 'ativo' }
+                ];
+                this.saveServicesToStorage();
+            }
+            console.log('Serviços carregados no admin:', this.services.length);
+        } catch (error) {
+            console.error('Erro ao carregar serviços:', error);
+            this.services = [];
+        }
+    }
+
+    saveServicesToStorage() {
+        try {
+            localStorage.setItem('salonServices', JSON.stringify(this.services));
+        } catch (error) {
+            console.error('Erro ao salvar serviços no localStorage:', error);
+        }
+    }
+
+    setupServiceEventListeners() {
+        // Botão Novo Serviço
+        document.getElementById('btnAddService')?.addEventListener('click', () => {
+            this.openServiceModal();
+        });
+
+        // Cancelar Modal
+        document.getElementById('svmBtnCancel')?.addEventListener('click', () => {
+            this.closeServiceModal();
+        });
+
+        // Submit Form
+        document.getElementById('svmForm')?.addEventListener('submit', (e) => {
+            this.saveService(e);
+        });
+
+        // Cancelar exclusão de serviço
+        document.getElementById('svmConfirmCancel')?.addEventListener('click', () => {
+            this.hideSvmConfirmModal();
+        });
+
+        // Confirmar exclusão de serviço
+        document.getElementById('svmConfirmDelete')?.addEventListener('click', () => {
+            this.deleteService();
+        });
+
+        // Fechar modal ao clicar fora
+        document.getElementById('svmModal')?.addEventListener('click', (e) => {
+            if (e.target === e.currentTarget) {
+                this.closeServiceModal();
+            }
+        });
+
+        document.getElementById('svmConfirmModal')?.addEventListener('click', (e) => {
+            if (e.target === e.currentTarget || e.target.classList.contains('confirm-overlay')) {
+                this.hideSvmConfirmModal();
+            }
+        });
+    }
+
+    switchTab(tabName) {
+        const btnAgenda = document.getElementById('btnNavAgenda');
+        const btnServicos = document.getElementById('btnNavServicos');
+        const viewAgenda = document.getElementById('viewAgenda');
+        const viewServicos = document.getElementById('viewServicos');
+
+        if (tabName === 'agenda') {
+            btnAgenda?.classList.add('active');
+            btnServicos?.classList.remove('active');
+            if (viewAgenda) viewAgenda.style.display = 'block';
+            viewServicos?.classList.remove('active');
+        } else if (tabName === 'servicos') {
+            btnAgenda?.classList.remove('active');
+            btnServicos?.classList.add('active');
+            if (viewAgenda) viewAgenda.style.display = 'none';
+            viewServicos?.classList.add('active');
+            this.renderServicesGrid();
+        }
+    }
+
+    renderServicesGrid() {
+        const grid = document.getElementById('svmGrid');
+        if (!grid) return;
+
+        grid.innerHTML = '';
+
+        if (this.services.length === 0) {
+            grid.innerHTML = `
+                <div class="svm-empty">
+                    <i class="fas fa-scissors" style="font-size: 3rem; color: var(--tertiary-gray); margin-bottom: 15px; display: block;"></i>
+                    <p>Nenhum serviço cadastrado.</p>
+                </div>
+            `;
+            return;
+        }
+
+        this.services.forEach(service => {
+            const card = document.createElement('div');
+            const isAtivo = service.status === 'ativo';
+            card.className = `svm-card ${!isAtivo ? 'disabled' : ''}`;
+            card.dataset.id = service.id;
+
+            card.innerHTML = `
+                <div class="svm-card-header">
+                    <div>
+                        <h3 class="svm-card-name" style="margin-bottom: 4px;">${service.nome}</h3>
+                    </div>
+                    <span class="svm-card-badge ${isAtivo ? 'ativo' : 'inativo'}">
+                        ${isAtivo ? 'Ativo' : 'Inativo'}
+                    </span>
+                </div>
+                <p class="svm-card-desc">${service.descricao || 'Sem descrição cadastrada.'}</p>
+                <div class="svm-card-meta">
+                    <div class="svm-meta-item">
+                        <i class="fas fa-clock"></i>
+                        <span>Duração: ${service.duracao || '1h'}</span>
+                    </div>
+                    <div class="svm-meta-item">
+                        <i class="fas fa-tag"></i>
+                        <span>Preço: R$ ${service.preco || '0'}</span>
+                    </div>
+                </div>
+                <div class="svm-card-actions">
+                    <button class="svm-btn svm-btn-edit" onclick="adminPanel.openServiceModal('${service.id}')">
+                        <i class="fas fa-edit"></i> Editar
+                    </button>
+                    <button class="svm-btn svm-btn-toggle" onclick="adminPanel.toggleServiceStatus('${service.id}')">
+                        <i class="fas ${isAtivo ? 'fa-eye-slash' : 'fa-eye'}"></i> ${isAtivo ? 'Desabilitar' : 'Habilitar'}
+                    </button>
+                    <button class="svm-btn svm-btn-delete" onclick="adminPanel.confirmDeleteService('${service.id}')">
+                        <i class="fas fa-trash"></i> Excluir
+                    </button>
+                </div>
+            `;
+            grid.appendChild(card);
+        });
+    }
+
+    openServiceModal(serviceId = null) {
+        const modal = document.getElementById('svmModal');
+        const modalTitle = document.getElementById('svmModalTitle');
+        const form = document.getElementById('svmForm');
+
+        if (!modal || !form) return;
+
+        form.reset();
+        document.getElementById('svmId').value = '';
+
+        if (serviceId) {
+            const service = this.services.find(s => s.id === serviceId);
+            if (!service) return;
+
+            if (modalTitle) {
+                modalTitle.innerHTML = `<i class="fas fa-edit"></i> <span>Editar Serviço</span>`;
+            }
+
+            document.getElementById('svmId').value = service.id;
+            document.getElementById('svmNome').value = service.nome;
+            document.getElementById('svmDescricao').value = service.descricao || '';
+            document.getElementById('svmDuracao').value = service.duracao || '';
+            document.getElementById('svmPreco').value = service.preco || '';
+            document.getElementById('svmStatus').value = service.status || 'ativo';
+        } else {
+            if (modalTitle) {
+                modalTitle.innerHTML = `<i class="fas fa-plus-circle"></i> <span>Novo Serviço</span>`;
+            }
+            document.getElementById('svmStatus').value = 'ativo';
+        }
+
+        modal.classList.add('active');
+        document.getElementById('svmNome').focus();
+    }
+
+    closeServiceModal() {
+        document.getElementById('svmModal')?.classList.remove('active');
+    }
+
+    saveService(e) {
+        e.preventDefault();
+
+        const id = document.getElementById('svmId').value;
+        const nome = document.getElementById('svmNome').value.trim();
+        const descricao = document.getElementById('svmDescricao').value.trim();
+        const duracao = document.getElementById('svmDuracao').value.trim();
+        const preco = document.getElementById('svmPreco').value.trim();
+        const status = document.getElementById('svmStatus').value;
+
+        if (!nome) {
+            this.showNotification('O nome do serviço é obrigatório.', 'error');
+            return;
+        }
+
+        if (id) {
+            const index = this.services.findIndex(s => s.id === id);
+            if (index !== -1) {
+                this.services[index] = { ...this.services[index], nome, descricao, duracao, preco, status };
+                this.showNotification('Serviço atualizado com sucesso!', 'success');
+            }
+        } else {
+            const newId = 'service_' + Date.now();
+            this.services.push({ id: newId, nome, descricao, duracao, preco, status });
+            this.showNotification('Serviço criado com sucesso!', 'success');
+        }
+
+        this.saveServicesToStorage();
+        this.closeServiceModal();
+        this.renderServicesGrid();
+    }
+
+    toggleServiceStatus(serviceId) {
+        const index = this.services.findIndex(s => s.id === serviceId);
+        if (index !== -1) {
+            const currentStatus = this.services[index].status;
+            const newStatus = currentStatus === 'ativo' ? 'inactive' : 'ativo';
+
+            // Map inactive to inativo to remain consistent
+            const statusMapped = newStatus === 'inactive' ? 'inativo' : 'ativo';
+            this.services[index].status = statusMapped;
+
+            this.saveServicesToStorage();
+            this.renderServicesGrid();
+
+            const actionText = statusMapped === 'ativo' ? 'habilitado' : 'desabilitado';
+            this.showNotification(`Serviço ${actionText} com sucesso!`, 'success');
+        }
+    }
+
+    confirmDeleteService(serviceId) {
+        this.selectedServiceToDelete = serviceId;
+        const modal = document.getElementById('svmConfirmModal');
+        if (modal) {
+            modal.classList.add('active');
+            setTimeout(() => {
+                document.getElementById('svmConfirmCancel')?.focus();
+            }, 100);
+        }
+    }
+
+    hideSvmConfirmModal() {
+        document.getElementById('svmConfirmModal')?.classList.remove('active');
+        this.selectedServiceToDelete = null;
+    }
+
+    deleteService() {
+        if (!this.selectedServiceToDelete) return;
+
+        this.services = this.services.filter(s => s.id !== this.selectedServiceToDelete);
+        this.saveServicesToStorage();
+        this.renderServicesGrid();
+        this.hideSvmConfirmModal();
+        this.showNotification('Serviço excluído com sucesso!', 'success');
+    }
 }
 
 // =================================================================
@@ -889,3 +1162,10 @@ let adminPanel;
 document.addEventListener('DOMContentLoaded', () => {
     adminPanel = new AdminPanel();
 });
+
+// Expor função de alternar abas globalmente
+window.switchAdminTab = (tabName) => {
+    if (adminPanel) {
+        adminPanel.switchTab(tabName);
+    }
+};
