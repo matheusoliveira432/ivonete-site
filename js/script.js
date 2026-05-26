@@ -1773,6 +1773,30 @@ class HairStylistApp {
     }
 
     performCancelAppointment(appointmentId) {
+        // Tentar excluir da API primeiro (MySQL)
+        if (window.apiService) {
+            window.apiService.deletarAgendamento(appointmentId)
+                .then(() => {
+                    console.log('Agendamento cancelado com sucesso na API');
+                    // Atualizar visual da página atual
+                    this.displayAppointments(); // Atualiza a lista de "Meus Agendamentos"
+                    this.renderizarHorarios();  // Libera o horário na grade de seleção
+                    this.updateAgendamentosCount(); // Atualiza o contador de notificações
+                    // Mostrar mensagem de sucesso
+                    this.showNotification('Agendamento cancelado com sucesso!', 'success');
+                })
+                .catch((error) => {
+                    console.warn('Erro ao cancelar na API, usando fallback localStorage:', error);
+                    // Fallback: apenas localStorage
+                    this.performCancelAppointmentLocal(appointmentId);
+                });
+        } else {
+            // Fallback se apiService não estiver disponível
+            this.performCancelAppointmentLocal(appointmentId);
+        }
+    }
+
+    performCancelAppointmentLocal(appointmentId) {
         if (!window.appointmentService) {
             // Fallback se o serviço não estiver disponível
             let appointments = JSON.parse(localStorage.getItem('meusAgendamentos') || '[]');

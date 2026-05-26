@@ -324,6 +324,28 @@ class AdminPanel {
     deleteAppointment(appointmentId) {
         console.log('Excluindo agendamento:', appointmentId);
 
+        // Tentar excluir da API primeiro (MySQL)
+        if (window.apiService) {
+            window.apiService.deletarAgendamento(appointmentId)
+                .then(() => {
+                    console.log('Agendamento excluído com sucesso da API');
+                    // Recarregar para atualizar a grade administrativa
+                    window.location.reload();
+                })
+                .catch((error) => {
+                    console.warn('Erro ao excluir da API, usando fallback localStorage:', error);
+                    // Fallback: apenas localStorage
+                    this.deleteAppointmentLocal(appointmentId);
+                });
+        } else {
+            // Fallback se apiService não estiver disponível
+            this.deleteAppointmentLocal(appointmentId);
+        }
+    }
+
+    deleteAppointmentLocal(appointmentId) {
+        console.log('Excluindo agendamento (apenas localStorage):', appointmentId);
+
         // Obter agendamentos atuais
         const agendamentos = JSON.parse(localStorage.getItem('meusAgendamentos')) || [];
 
@@ -508,12 +530,39 @@ class AdminPanel {
     confirmDelete() {
         if (!this.selectedAppointment) return;
 
-        this.appointments = this.appointments.filter(a => a.id !== this.selectedAppointment.id);
-        this.saveAppointments();
-        this.loadAppointments();
-        this.hideConfirmModal();
-        this.closeModal();
-        this.showNotification('Agendamento excluído com sucesso', 'success');
+        // Tentar excluir da API primeiro (MySQL)
+        const appointmentId = this.selectedAppointment.apiId || this.selectedAppointment.id;
+        
+        if (window.apiService) {
+            window.apiService.deletarAgendamento(appointmentId)
+                .then(() => {
+                    console.log('Agendamento excluído com sucesso da API');
+                    this.appointments = this.appointments.filter(a => a.id !== this.selectedAppointment.id);
+                    this.saveAppointments();
+                    this.loadAppointments();
+                    this.hideConfirmModal();
+                    this.closeModal();
+                    this.showNotification('Agendamento excluído com sucesso', 'success');
+                })
+                .catch((error) => {
+                    console.warn('Erro ao excluir da API, usando fallback localStorage:', error);
+                    // Fallback: apenas localStorage
+                    this.appointments = this.appointments.filter(a => a.id !== this.selectedAppointment.id);
+                    this.saveAppointments();
+                    this.loadAppointments();
+                    this.hideConfirmModal();
+                    this.closeModal();
+                    this.showNotification('Agendamento excluído com sucesso', 'success');
+                });
+        } else {
+            // Fallback se apiService não estiver disponível
+            this.appointments = this.appointments.filter(a => a.id !== this.selectedAppointment.id);
+            this.saveAppointments();
+            this.loadAppointments();
+            this.hideConfirmModal();
+            this.closeModal();
+            this.showNotification('Agendamento excluído com sucesso', 'success');
+        }
     }
 
     // =================================================================

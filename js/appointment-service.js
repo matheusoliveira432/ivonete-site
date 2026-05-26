@@ -80,6 +80,26 @@ class AppointmentService {
     // CANCELAR AGENDAMENTO
     // =================================================================
     cancelAppointment(appointmentId) {
+        // Tentar excluir da API primeiro (MySQL)
+        if (window.apiService) {
+            window.apiService.deletarAgendamento(appointmentId)
+                .then(() => {
+                    console.log('Agendamento cancelado com sucesso na API');
+                    // Recarregar agendamentos do localStorage para sincronizar
+                    this.loadAppointments();
+                })
+                .catch((error) => {
+                    console.warn('Erro ao cancelar na API, usando fallback localStorage:', error);
+                    // Fallback: apenas localStorage
+                    this.cancelAppointmentLocal(appointmentId);
+                });
+        } else {
+            // Fallback se apiService não estiver disponível
+            this.cancelAppointmentLocal(appointmentId);
+        }
+    }
+
+    cancelAppointmentLocal(appointmentId) {
         // Remover fisicamente o agendamento do array para liberar o horário no sistema
         const initialLength = this.appointments.length;
         this.appointments = this.appointments.filter(apt => apt.id.toString() !== appointmentId.toString());

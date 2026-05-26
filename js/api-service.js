@@ -204,6 +204,44 @@ class ApiService {
         }
     }
 
+    /**
+     * Excluir um agendamento da API (MySQL)
+     * @param {string|number} agendamentoId - ID do agendamento a ser excluído
+     * @returns {boolean} Sucesso da operação
+     */
+    async deletarAgendamento(agendamentoId) {
+        try {
+            const response = await fetch(`${this.baseUrl}/agendamentos/${agendamentoId}`, {
+                method: 'DELETE'
+            });
+
+            if (!response.ok) {
+                const error = await response.json();
+                throw new Error(error.erro || 'Erro ao excluir agendamento');
+            }
+
+            console.log(`✅ Agendamento ${agendamentoId} excluído da API (MySQL)`);
+
+            // Também remover do localStorage para manter sincronização
+            let appointments = JSON.parse(localStorage.getItem('meusAgendamentos') || '[]');
+            appointments = appointments.filter(app => app.id.toString() !== agendamentoId.toString() && app.apiId?.toString() !== agendamentoId.toString());
+            localStorage.setItem('meusAgendamentos', JSON.stringify(appointments));
+            console.log('📦 Agendamento removido do localStorage');
+
+            return true;
+        } catch (error) {
+            console.error('❌ Erro ao excluir agendamento da API:', error);
+
+            // Fallback: remover apenas do localStorage
+            let appointments = JSON.parse(localStorage.getItem('meusAgendamentos') || '[]');
+            appointments = appointments.filter(app => app.id.toString() !== agendamentoId.toString() && app.apiId?.toString() !== agendamentoId.toString());
+            localStorage.setItem('meusAgendamentos', JSON.stringify(appointments));
+            console.log('⚠️ Agendamento removido apenas do localStorage (API offline)');
+
+            return false;
+        }
+    }
+
     // =================================================================
     // SINCRONIZAÇÃO COM LOCALSTORAGE (compatibilidade)
     // =================================================================
@@ -261,6 +299,10 @@ class ApiService {
                 // Salvar todos no localStorage (o appointment-service filtrará os futuros para exibir)
                 localStorage.setItem('meusAgendamentos', JSON.stringify(todos));
                 console.log(`🔄 ${todos.length} agendamentos sincronizados da API (MySQL) para o site.`);
+            } else {
+                // Se a API retornar lista vazia, limpar o localStorage
+                localStorage.setItem('meusAgendamentos', JSON.stringify([]));
+                console.log('🔄 Nenhum agendamento na API, localStorage limpo.');
             }
         } catch (error) {
             console.warn('Não foi possível sincronizar da API:', error);
