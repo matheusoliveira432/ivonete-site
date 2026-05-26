@@ -488,8 +488,11 @@ class HairStylistApp {
             localStorage.setItem('salonServices', JSON.stringify(services));
         }
 
-        // Filtrar apenas os serviços ativos para exibição ao cliente
+        console.log('=== SERVIÇOS CARREGADOS NO CLIENTE ===', services);
+
+        // Filtrar apenas os serviços ativos para exibição ao cliente (removendo inativo/inactive)
         const activeServices = services.filter(s => s.status === 'ativo');
+        console.log('=== SERVIÇOS ATIVOS FILTRADOS ===', activeServices);
 
         // Renderizar dinamicamente
         servicesGrid.innerHTML = '';
@@ -1074,28 +1077,75 @@ class HairStylistApp {
     // DETECTAR MUDANÇAS NO LOCALSTORAGE
     // =================================================================
     setupStorageListener() {
+        // Salvar snapshot dos serviços para detectar mudanças ao retornar à aba
+        this._lastServicesSnapshot = localStorage.getItem('salonServices') || '';
+        this._lastAppointmentsSnapshot = localStorage.getItem('meusAgendamentos') || '';
+
         // Escutar mudanças no localStorage (de outras abas/janelas)
+        // NOTA: O evento 'storage' só dispara em OUTRAS abas, não na aba atual
         window.addEventListener('storage', (e) => {
             if (e.key === 'meusAgendamentos') {
-                console.log('Mudança detectada nos agendamentos, atualizando disponibilidade...');
+                console.log('Mudança detectada nos agendamentos (storage event), atualizando disponibilidade...');
+                this._lastAppointmentsSnapshot = e.newValue || '';
                 
                 // Se houver data selecionada, atualizar disponibilidade
                 if (this.dataSelecionada) {
                     setTimeout(() => {
                         this.renderizarHorarios();
-                    }, 100); // Pequeno delay para garantir que o localStorage foi atualizado
+                    }, 100);
                 }
             }
-        });
-        
-        // Intervalo periódico removido para evitar que a seleção do usuário desapareça sozinha
-        /*
-        setInterval(() => {
-            if (this.dataSelecionada) {
-                this.renderizarHorarios();
+
+            // Escutar mudanças nos serviços (editados/desativados/excluídos no painel admin)
+            // Suporta e.key === 'salonServices' (mudança real) ou e.key === null/undefined (nosso custom event local)
+            if (!e || !e.key || e.key === 'salonServices') {
+                console.log('Mudança detectada nos serviços (storage event), atualizando página de serviços...');
+                this._lastServicesSnapshot = e && e.newValue ? e.newValue : (localStorage.getItem('salonServices') || '');
+                setTimeout(() => {
+                    this.initializeServices();
+                }, 100);
             }
-        }, 5000); 
-        */
+        });
+
+        // Detectar quando o usuário volta para esta aba (funciona mesmo em file://)
+        // O evento 'storage' não dispara na mesma aba, então usamos visibilitychange e focus
+        // para verificar se houve mudanças no localStorage enquanto o usuário estava em outra aba
+        const checkForUpdates = () => {
+            const currentServices = localStorage.getItem('salonServices') || '';
+            const currentAppointments = localStorage.getItem('meusAgendamentos') || '';
+
+            // Verificar se os serviços mudaram
+            if (currentServices !== this._lastServicesSnapshot) {
+                console.log('Mudança detectada nos serviços (ao retornar à aba), atualizando...');
+                this._lastServicesSnapshot = currentServices;
+                if (document.querySelector('.services-grid')) {
+                    this.initializeServices();
+                }
+            }
+
+            // Verificar se os agendamentos mudaram
+            if (currentAppointments !== this._lastAppointmentsSnapshot) {
+                console.log('Mudança detectada nos agendamentos (ao retornar à aba), atualizando...');
+                this._lastAppointmentsSnapshot = currentAppointments;
+                if (this.dataSelecionada) {
+                    this.renderizarHorarios();
+                }
+            }
+        };
+
+        // Quando a aba fica visível novamente (funciona em todos os protocolos)
+        document.addEventListener('visibilitychange', () => {
+            if (document.visibilityState === 'visible') {
+                console.log('Aba visível novamente, verificando atualizações...');
+                checkForUpdates();
+            }
+        });
+
+        // Backup: quando a janela recebe foco
+        window.addEventListener('focus', () => {
+            console.log('Janela recebeu foco, verificando atualizações...');
+            checkForUpdates();
+        });
     }
     
     // =================================================================

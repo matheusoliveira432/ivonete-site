@@ -888,13 +888,22 @@ class AdminPanel {
     // SERVIÇOS - CRUD & GERENCIAMENTO
     // =================================================================
 
-    loadServices() {
+    async loadServices() {
         try {
-            const stored = localStorage.getItem('salonServices');
-            if (stored) {
-                this.services = JSON.parse(stored);
+            if (window.apiService) {
+                // Tentar carregar da API
+                this.services = await window.apiService.listarServicos();
+                // Sincronizar com o localStorage para fallback e abas
+                this.saveServicesToStorage();
             } else {
-                // Inicializar com serviços padrão
+                const stored = localStorage.getItem('salonServices');
+                if (stored) {
+                    this.services = JSON.parse(stored);
+                }
+            }
+
+            // Se ainda não tiver nada (primeiro acesso)
+            if (!this.services || this.services.length === 0) {
                 this.services = [
                     { id: 'progressiva', nome: 'Progressiva', descricao: 'Alisamento capilar duradouro com produtos importados', duracao: '2h 30min', preco: '350', status: 'ativo' },
                     { id: 'tintura', nome: 'Tintura', descricao: 'Coloração profissional com tons vibrantes e duradouros', duracao: '2h', preco: '180', status: 'ativo' },
@@ -903,6 +912,17 @@ class AdminPanel {
                     { id: 'selagem', nome: 'Selagem', descricao: 'Proteção térmica e nutrição para cabelos danificados', duracao: '1h 30min', preco: '150', status: 'ativo' },
                     { id: 'luzes', nome: 'Luzes', descricao: 'Mechas e luzes com técnicas modernas e naturais', duracao: '3h', preco: '250', status: 'ativo' }
                 ];
+
+                // Se apiService estiver disponível, salvar no banco também
+                if (window.apiService) {
+                    for (const serv of this.services) {
+                        try {
+                            await window.apiService.salvarServico(serv);
+                        } catch (err) {
+                            console.warn('Erro ao salvar serviço padrão na API:', err);
+                        }
+                    }
+                }
                 this.saveServicesToStorage();
             }
             console.log('Serviços carregados no admin:', this.services.length);
@@ -919,6 +939,7 @@ class AdminPanel {
             console.error('Erro ao salvar serviços no localStorage:', error);
         }
     }
+
 
     setupServiceEventListeners() {
         // Botão Novo Serviço
@@ -1077,7 +1098,7 @@ class AdminPanel {
         document.getElementById('svmModal')?.classList.remove('active');
     }
 
-    saveService(e) {
+    async saveService(e) {
         e.preventDefault();
 
         const id = document.getElementById('svmId').value;
@@ -1092,24 +1113,59 @@ class AdminPanel {
             return;
         }
 
-        if (id) {
-            const index = this.services.findIndex(s => s.id === id);
-            if (index !== -1) {
-                this.services[index] = { ...this.services[index], nome, descricao, duracao, preco, status };
-                this.showNotification('Serviço atualizado com sucesso!', 'success');
-            }
-        } else {
-            const newId = 'service_' + Date.now();
-            this.services.push({ id: newId, nome, descricao, duracao, preco, status });
-            this.showNotification('Serviço criado com sucesso!', 'success');
+        let targetId = id;
+        if (!targetId) {
+            targetId = 'service_' + Date.now();
         }
 
-        this.saveServicesToStorage();
-        this.closeServiceModal();
-        this.renderServicesGrid();
+        const servicoData = { id: targetId, nome, descricao, duracao, preco, status };
+        let apiSuccess = false;
+
+        try {
+            // Salvar na API apenas se estiver online
+            if (window.apiService && window.apiService.isOnline) {
+                await window.apiService.salvarServico(servicoData);
+                apiSuccess = true;
+            }
+
+            if (id) {
+                const index = this.services.findIndex(s => s.id === id);
+                if (index !== -1) {
+                    this.services[index] = servicoData;
+                }
+            } else {
+                this.services.push(servicoData);
+            }
+
+            this.saveServicesToStorage();
+            this.closeServiceModal();
+            this.renderServicesGrid();
+
+            if (apiSuccess) {
+                this.showNotification(id ? 'Serviço atualizado no banco!' : 'Serviço criado no banco!', 'success');
+            } else {
+                this.showNotification(id ? 'Serviço atualizado localmente!' : 'Serviço criado localmente!', 'warning');
+            }
+        } catch (error) {
+            console.error('Erro ao salvar serviço na API, usando localStorage:', error);
+            
+            // Forçar fallback local se der erro no servidor
+            if (id) {
+                const index = this.services.findIndex(s => s.id === id);
+                if (index !== -1) {
+                    this.services[index] = servicoData;
+                }
+            } else {
+                this.services.push(servicoData);
+            }
+            this.saveServicesToStorage();
+            this.closeServiceModal();
+            this.renderServicesGrid();
+            this.showNotification('Salvo localmente (Servidor indisponível)', 'warning');
+        }
     }
 
-    toggleServiceStatus(serviceId) {
+    async toggleServiceStatus(serviceId) {
         const index = this.services.findIndex(s => s.id === serviceId);
         if (index !== -1) {
             const currentStatus = this.services[index].status;
@@ -1117,13 +1173,36 @@ class AdminPanel {
 
             // Map inactive to inativo to remain consistent
             const statusMapped = newStatus === 'inactive' ? 'inativo' : 'ativo';
-            this.services[index].status = statusMapped;
+            const updatedService = { ...this.services[index], status: statusMapped };
+            let apiSuccess = false;
 
-            this.saveServicesToStorage();
-            this.renderServicesGrid();
+            try {
+                if (window.apiService && window.apiService.isOnline) {
+                    await window.apiService.salvarServico(updatedService);
+                    apiSuccess = true;
+                }
 
-            const actionText = statusMapped === 'ativo' ? 'habilitado' : 'desabilitado';
-            this.showNotification(`Serviço ${actionText} com sucesso!`, 'success');
+                this.services[index].status = statusMapped;
+                this.saveServicesToStorage();
+                this.renderServicesGrid();
+
+                const actionText = statusMapped === 'ativo' ? 'habilitado' : 'desabilitado';
+                if (apiSuccess) {
+                    this.showNotification(`Serviço ${actionText} no banco!`, 'success');
+                } else {
+                    this.showNotification(`Serviço ${actionText} localmente!`, 'warning');
+                }
+            } catch (error) {
+                console.error('Erro ao atualizar status na API, usando localStorage:', error);
+                
+                // Fallback local
+                this.services[index].status = statusMapped;
+                this.saveServicesToStorage();
+                this.renderServicesGrid();
+                
+                const actionText = statusMapped === 'ativo' ? 'habilitado' : 'desabilitado';
+                this.showNotification(`Serviço ${actionText} localmente (Sem conexão)`, 'warning');
+            }
         }
     }
 
@@ -1143,14 +1222,36 @@ class AdminPanel {
         this.selectedServiceToDelete = null;
     }
 
-    deleteService() {
+    async deleteService() {
         if (!this.selectedServiceToDelete) return;
+        let apiSuccess = false;
 
-        this.services = this.services.filter(s => s.id !== this.selectedServiceToDelete);
-        this.saveServicesToStorage();
-        this.renderServicesGrid();
-        this.hideSvmConfirmModal();
-        this.showNotification('Serviço excluído com sucesso!', 'success');
+        try {
+            if (window.apiService && window.apiService.isOnline) {
+                await window.apiService.excluirServico(this.selectedServiceToDelete);
+                apiSuccess = true;
+            }
+
+            this.services = this.services.filter(s => s.id !== this.selectedServiceToDelete);
+            this.saveServicesToStorage();
+            this.renderServicesGrid();
+            this.hideSvmConfirmModal();
+
+            if (apiSuccess) {
+                this.showNotification('Serviço excluído do banco!', 'success');
+            } else {
+                this.showNotification('Serviço excluído localmente!', 'warning');
+            }
+        } catch (error) {
+            console.error('Erro ao excluir serviço na API, usando localStorage:', error);
+            
+            // Fallback local
+            this.services = this.services.filter(s => s.id !== this.selectedServiceToDelete);
+            this.saveServicesToStorage();
+            this.renderServicesGrid();
+            this.hideSvmConfirmModal();
+            this.showNotification('Excluído localmente (Sem conexão)', 'warning');
+        }
     }
 }
 

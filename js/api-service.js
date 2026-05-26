@@ -266,6 +266,91 @@ class ApiService {
             console.warn('Não foi possível sincronizar da API:', error);
         }
     }
+
+    // =================================================================
+    // SERVIÇOS (MYSQL INTEGRATION)
+    // =================================================================
+
+    /**
+     * Listar todos os serviços da API
+     */
+    async listarServicos() {
+        try {
+            const response = await fetch(`${this.baseUrl}/servicos`);
+            if (!response.ok) throw new Error('Erro ao listar serviços');
+            return await response.json();
+        } catch (error) {
+            console.error('Erro ao listar serviços da API:', error);
+            // Fallback para o localStorage
+            const local = localStorage.getItem('salonServices');
+            return local ? JSON.parse(local) : [];
+        }
+    }
+
+    /**
+     * Criar ou atualizar um serviço na API
+     */
+    async salvarServico(servicoData) {
+        try {
+            const response = await fetch(`${this.baseUrl}/servicos`, {
+                method: 'POST',
+                headers: { 'Content-Type': 'application/json' },
+                body: JSON.stringify(servicoData)
+            });
+
+            if (!response.ok) {
+                const error = await response.json();
+                throw new Error(error.erro || 'Erro ao salvar serviço');
+            }
+
+            const resultado = await response.json();
+            console.log('✅ Serviço salvo na API (MySQL):', resultado);
+            return resultado;
+        } catch (error) {
+            console.error('❌ Erro ao salvar serviço na API:', error);
+            throw error; // Propagar erro para que o frontend saiba
+        }
+    }
+
+    /**
+     * Excluir um serviço na API
+     */
+    async excluirServico(id) {
+        try {
+            const response = await fetch(`${this.baseUrl}/servicos/${id}`, {
+                method: 'DELETE'
+            });
+
+            if (!response.ok) {
+                const error = await response.json();
+                throw new Error(error.erro || 'Erro ao excluir serviço');
+            }
+
+            console.log(`✅ Serviço ${id} excluído na API (MySQL)`);
+            return true;
+        } catch (error) {
+            console.error('❌ Erro ao excluir serviço na API:', error);
+            throw error;
+        }
+    }
+
+    /**
+     * Carregar serviços da API e sincronizar com localStorage
+     */
+    async syncServicesFromApi() {
+        try {
+            const services = await this.listarServicos();
+            if (services && services.length > 0) {
+                localStorage.setItem('salonServices', JSON.stringify(services));
+                console.log(`🔄 ${services.length} serviços sincronizados da API (MySQL) para o site.`);
+                
+                // Disparar evento para atualizar a UI do site se necessário
+                window.dispatchEvent(new Event('storage'));
+            }
+        } catch (error) {
+            console.warn('Não foi possível sincronizar serviços da API:', error);
+        }
+    }
 }
 
 // =================================================================
@@ -277,5 +362,7 @@ window.apiService = new ApiService();
 window.addEventListener('DOMContentLoaded', () => {
     if (window.apiService) {
         window.apiService.syncFromApi();
+        window.apiService.syncServicesFromApi();
     }
 });
+

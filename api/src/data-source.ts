@@ -2,6 +2,7 @@ import "reflect-metadata";
 import { DataSource } from "typeorm";
 import { Cliente } from "./entity/Cliente";
 import { Agendamento } from "./entity/Agendamento";
+import { Servico } from "./entity/Servico";
 
 export const AppDataSource = new DataSource({
   type: "mysql",
@@ -12,5 +13,6 @@ export const AppDataSource = new DataSource({
   database: "ivonete_site",
   synchronize: true,
   logging: true,
-  entities: [Cliente, Agendamento],
+  entities: [Cliente, Agendamento, Servico],
 });
+
