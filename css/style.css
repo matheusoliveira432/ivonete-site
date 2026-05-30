@@ -2842,11 +2842,20 @@ a:hover {
     }
 
     .time-slots {
-        grid-template-columns: repeat(2, 1fr);
+        display: flex;
         gap: var(--spacing-sm);
+        overflow-x: auto;
+        flex-wrap: nowrap;
+        scrollbar-width: none;
+        padding-right: var(--spacing-xl);
+    }
+
+    .time-slots::-webkit-scrollbar {
+        display: none;
     }
 
     .time-slot {
+        flex: 0 0 120px;
         padding: var(--spacing-sm);
         font-size: 0.9rem;
     }
@@ -2970,15 +2979,24 @@ a:hover {
     }
 
     .days-grid {
-        grid-template-columns: repeat(auto-fit, minmax(80px, 1fr));
+        display: flex;
         gap: var(--spacing-xs);
+        overflow-x: auto;
+        flex-wrap: nowrap;
+        scrollbar-width: none;
+        padding-right: var(--spacing-xl);
+    }
+
+    .days-grid::-webkit-scrollbar {
+        display: none;
     }
 
     .day-btn {
+        flex: 0 0 80px;
         min-height: 45px;
         padding: var(--spacing-xs);
         font-size: 0.75rem;
-        border-radius: var(--border-radius-md);
+        border-radius: var(--border-radius-lg);
     }
 
     .selection-summary {
@@ -3281,11 +3299,20 @@ a:hover {
     }
 
     .time-slots {
-        grid-template-columns: 1fr;
+        display: flex;
         gap: var(--spacing-xs);
+        overflow-x: auto;
+        flex-wrap: nowrap;
+        scrollbar-width: none;
+        padding-right: var(--spacing-xl);
+    }
+
+    .time-slots::-webkit-scrollbar {
+        display: none;
     }
 
     .time-slot {
+        flex: 0 0 120px;
         padding: var(--spacing-md);
         font-size: 0.85rem;
     }
@@ -3332,15 +3359,24 @@ a:hover {
     }
 
     .days-grid {
-        grid-template-columns: repeat(auto-fit, minmax(70px, 1fr));
+        display: flex;
         gap: 2px;
+        overflow-x: auto;
+        flex-wrap: nowrap;
+        scrollbar-width: none;
+        padding-right: var(--spacing-xl);
+    }
+
+    .days-grid::-webkit-scrollbar {
+        display: none;
     }
 
     .day-btn {
+        flex: 0 0 70px;
         min-height: 40px;
         padding: 2px var(--spacing-xs);
         font-size: 0.7rem;
-        border-radius: var(--border-radius-sm);
+        border-radius: var(--border-radius-lg);
     }
 
     .quick-date-btn {
