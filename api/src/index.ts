@@ -1,6 +1,7 @@
 import "reflect-metadata";
 import express from "express";
 import cors from "cors";
+import path from "path";
 import { AppDataSource } from "./data-source";
 import clienteRoutes from "./routes/clienteRoutes";
 import agendamentoRoutes from "./routes/agendamentoRoutes";
@@ -12,6 +13,9 @@ const PORT = 3001;
 // Middlewares
 app.use(cors());
 app.use(express.json());
+
+// Servir pasta de uploads como estática
+app.use("/uploads", express.static(path.join(__dirname, "../uploads")));
 
 // Rotas
 app.use("/clientes", clienteRoutes);

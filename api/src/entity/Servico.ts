@@ -19,4 +19,7 @@ export class Servico {
 
   @Column({ length: 20, default: "ativo" })
   status: string;
+
+  @Column({ length: 255, nullable: true })
+  imagem: string;
 }

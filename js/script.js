@@ -513,9 +513,16 @@ class HairStylistApp {
                 badgeHTML = `<div class="service-badge trending"><i class="fas fa-fire"></i> Trending</div>`;
             }
 
-            // Tratar imagem e fallback
-            let imgPath = `img/${service.id}.png`;
-            if (!['progressiva', 'tintura', 'corte', 'botox', 'selagem', 'luzes'].includes(service.id)) {
+            // Tratar imagem: priorizar imagem do banco, fallback para estática
+            let imgPath;
+            if (service.imagem) {
+                // Imagem cadastrada no banco (via upload)
+                imgPath = service.imagem.startsWith('http')
+                    ? service.imagem
+                    : `${window.apiService ? window.apiService.baseUrl : 'http://localhost:3001'}/${service.imagem}`;
+            } else if (['progressiva', 'tintura', 'corte', 'botox', 'selagem', 'luzes'].includes(service.id)) {
+                imgPath = `img/${service.id}.png`;
+            } else {
                 imgPath = `img/corte.png`;
             }
 

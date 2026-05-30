@@ -355,6 +355,35 @@ class ApiService {
     }
 
     /**
+     * Upload de imagem de serviço
+     * @param {File} file - Arquivo de imagem
+     * @returns {Object} { imagem: 'uploads/filename.ext' }
+     */
+    async uploadImagem(file) {
+        try {
+            const formData = new FormData();
+            formData.append('imagem', file);
+
+            const response = await fetch(`${this.baseUrl}/servicos/upload`, {
+                method: 'POST',
+                body: formData
+            });
+
+            if (!response.ok) {
+                const error = await response.json();
+                throw new Error(error.erro || 'Erro ao fazer upload da imagem');
+            }
+
+            const resultado = await response.json();
+            console.log('✅ Imagem enviada com sucesso:', resultado);
+            return resultado;
+        } catch (error) {
+            console.error('❌ Erro ao fazer upload da imagem:', error);
+            throw error;
+        }
+    }
+
+    /**
      * Excluir um serviço na API
      */
     async excluirServico(id) {

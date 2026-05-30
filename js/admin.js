@@ -1028,6 +1028,54 @@ class AdminPanel {
                 this.hideSvmConfirmModal();
             }
         });
+
+        // Upload de imagem: clicar na área abre o file input
+        const uploadArea = document.getElementById('svmUploadArea');
+        const fileInput = document.getElementById('svmImagem');
+        const preview = document.getElementById('svmUploadPreview');
+        const removeBtn = document.getElementById('svmUploadRemove');
+
+        if (uploadArea && fileInput) {
+            uploadArea.addEventListener('click', (e) => {
+                // Não abrir file picker se clicou no botão remover
+                if (e.target.closest('.svm-upload-remove')) return;
+                fileInput.click();
+            });
+
+            fileInput.addEventListener('change', (e) => {
+                const file = e.target.files[0];
+                if (file) {
+                    // Validar tamanho (5MB)
+                    if (file.size > 5 * 1024 * 1024) {
+                        this.showNotification('A imagem deve ter no máximo 5MB.', 'error');
+                        fileInput.value = '';
+                        return;
+                    }
+
+                    // Mostrar preview
+                    const reader = new FileReader();
+                    reader.onload = (ev) => {
+                        if (preview) {
+                            preview.src = ev.target.result;
+                            uploadArea.classList.add('has-image');
+                        }
+                    };
+                    reader.readAsDataURL(file);
+                    this.pendingImageFile = file;
+                }
+            });
+        }
+
+        if (removeBtn) {
+            removeBtn.addEventListener('click', (e) => {
+                e.stopPropagation();
+                if (fileInput) fileInput.value = '';
+                if (preview) preview.src = '';
+                if (uploadArea) uploadArea.classList.remove('has-image');
+                this.pendingImageFile = null;
+                this.pendingImageRemoved = true;
+            });
+        }
     }
 
     switchTab(tabName) {
@@ -1072,7 +1120,17 @@ class AdminPanel {
             card.className = `svm-card ${!isAtivo ? 'disabled' : ''}`;
             card.dataset.id = service.id;
 
+            // Determinar URL da imagem
+            let imgHTML = '';
+            if (service.imagem) {
+                const imgUrl = service.imagem.startsWith('http')
+                    ? service.imagem
+                    : `${window.apiService ? window.apiService.baseUrl : 'http://localhost:3001'}/${service.imagem}`;
+                imgHTML = `<img src="${imgUrl}" alt="${service.nome}" class="svm-card-img" onerror="this.style.display='none'">`;
+            }
+
             card.innerHTML = `
+                ${imgHTML}
                 <div class="svm-card-header">
                     <div>
                         <h3 class="svm-card-name" style="margin-bottom: 4px;">${service.nome}</h3>
@@ -1112,11 +1170,21 @@ class AdminPanel {
         const modal = document.getElementById('svmModal');
         const modalTitle = document.getElementById('svmModalTitle');
         const form = document.getElementById('svmForm');
+        const uploadArea = document.getElementById('svmUploadArea');
+        const preview = document.getElementById('svmUploadPreview');
+        const fileInput = document.getElementById('svmImagem');
 
         if (!modal || !form) return;
 
         form.reset();
         document.getElementById('svmId').value = '';
+        this.pendingImageFile = null;
+        this.pendingImageRemoved = false;
+
+        // Resetar upload area
+        if (uploadArea) uploadArea.classList.remove('has-image');
+        if (preview) preview.src = '';
+        if (fileInput) fileInput.value = '';
 
         if (serviceId) {
             const service = this.services.find(s => s.id === serviceId);
@@ -1132,6 +1200,15 @@ class AdminPanel {
             document.getElementById('svmDuracao').value = service.duracao || '';
             document.getElementById('svmPreco').value = service.preco || '';
             document.getElementById('svmStatus').value = service.status || 'ativo';
+
+            // Carregar imagem existente na preview
+            if (service.imagem && preview && uploadArea) {
+                const imgUrl = service.imagem.startsWith('http')
+                    ? service.imagem
+                    : `${window.apiService ? window.apiService.baseUrl : 'http://localhost:3001'}/${service.imagem}`;
+                preview.src = imgUrl;
+                uploadArea.classList.add('has-image');
+            }
         } else {
             if (modalTitle) {
                 modalTitle.innerHTML = `<i class="fas fa-plus-circle"></i> <span>Novo Serviço</span>`;
@@ -1167,7 +1244,28 @@ class AdminPanel {
             targetId = 'service_' + Date.now();
         }
 
-        const servicoData = { id: targetId, nome, descricao, duracao, preco, status };
+        // Determinar imagem: upload novo, mantida, ou removida
+        let imagem = null;
+
+        // Se há um arquivo novo pendente, fazer upload
+        if (this.pendingImageFile && window.apiService && window.apiService.isOnline) {
+            try {
+                const uploadResult = await window.apiService.uploadImagem(this.pendingImageFile);
+                imagem = uploadResult.imagem; // ex: 'uploads/1234567890-foto.jpg'
+            } catch (uploadError) {
+                console.error('Erro no upload da imagem:', uploadError);
+                this.showNotification('Erro ao enviar imagem. Salvando sem imagem.', 'warning');
+            }
+        } else if (!this.pendingImageRemoved && id) {
+            // Manter a imagem anterior (editando sem trocar imagem)
+            const existingService = this.services.find(s => s.id === id);
+            if (existingService && existingService.imagem) {
+                imagem = existingService.imagem;
+            }
+        }
+        // Se pendingImageRemoved === true, imagem fica null (removida)
+
+        const servicoData = { id: targetId, nome, descricao, duracao, preco, status, imagem };
         let apiSuccess = false;
 
         try {
@@ -1190,6 +1288,10 @@ class AdminPanel {
             this.closeServiceModal();
             this.renderServicesGrid();
 
+            // Limpar estado de upload
+            this.pendingImageFile = null;
+            this.pendingImageRemoved = false;
+
             if (apiSuccess) {
                 this.showNotification(id ? 'Serviço atualizado no banco!' : 'Serviço criado no banco!', 'success');
             } else {
@@ -1210,6 +1312,8 @@ class AdminPanel {
             this.saveServicesToStorage();
             this.closeServiceModal();
             this.renderServicesGrid();
+            this.pendingImageFile = null;
+            this.pendingImageRemoved = false;
             this.showNotification('Salvo localmente (Servidor indisponível)', 'warning');
         }
     }

@@ -1313,6 +1313,116 @@
             color: var(--secondary-gray);
         }
 
+        /* Upload de Imagem */
+        .svm-upload-area {
+            border: 2px dashed var(--secondary-gray);
+            border-radius: var(--border-radius-lg);
+            padding: var(--spacing-lg);
+            text-align: center;
+            cursor: pointer;
+            transition: all 0.3s ease;
+            background: var(--quinary-black);
+            position: relative;
+            overflow: hidden;
+        }
+
+        .svm-upload-area:hover {
+            border-color: var(--primary-gold);
+            background: rgba(197, 160, 89, 0.05);
+        }
+
+        .svm-upload-area.has-image {
+            padding: 0;
+            border-style: solid;
+            border-color: var(--primary-gold);
+        }
+
+        .svm-upload-placeholder {
+            display: flex;
+            flex-direction: column;
+            align-items: center;
+            gap: var(--spacing-sm);
+            color: var(--tertiary-gray);
+            pointer-events: none;
+        }
+
+        .svm-upload-placeholder i {
+            font-size: 2rem;
+            color: var(--secondary-gray);
+            transition: color 0.3s ease;
+        }
+
+        .svm-upload-area:hover .svm-upload-placeholder i {
+            color: var(--primary-gold);
+        }
+
+        .svm-upload-placeholder span {
+            font-size: 0.85rem;
+        }
+
+        .svm-upload-placeholder small {
+            font-size: 0.7rem;
+            color: var(--secondary-gray);
+        }
+
+        .svm-upload-preview {
+            width: 100%;
+            height: 200px;
+            object-fit: cover;
+            border-radius: var(--border-radius-lg);
+            display: none;
+        }
+
+        .svm-upload-area.has-image .svm-upload-preview {
+            display: block;
+        }
+
+        .svm-upload-area.has-image .svm-upload-placeholder {
+            display: none;
+        }
+
+        .svm-upload-remove {
+            position: absolute;
+            top: 8px;
+            right: 8px;
+            width: 28px;
+            height: 28px;
+            background: rgba(220, 53, 69, 0.9);
+            border: none;
+            border-radius: 50%;
+            color: white;
+            cursor: pointer;
+            display: none;
+            align-items: center;
+            justify-content: center;
+            font-size: 0.75rem;
+            transition: all 0.2s ease;
+            z-index: 2;
+        }
+
+        .svm-upload-area.has-image .svm-upload-remove {
+            display: flex;
+        }
+
+        .svm-upload-remove:hover {
+            background: #dc3545;
+            transform: scale(1.1);
+        }
+
+        .svm-upload-input {
+            display: none;
+        }
+
+        /* Thumbnail no card do admin */
+        .svm-card-img {
+            width: 100%;
+            height: 140px;
+            object-fit: cover;
+            border-radius: var(--border-radius-lg);
+            margin-bottom: var(--spacing-md);
+            border: 1px solid var(--primary-gray);
+        }
+
         /* Responsivo Serviços */
         @media (max-width: 768px) {
             .admin-nav {
@@ -1519,6 +1629,21 @@
                         <option value="ativo">Ativo (visível para clientes)</option>
                         <option value="inativo">Inativo (oculto para clientes)</option>
                     </select>
+                </div>
+                <div class="svm-form-group">
+                    <label>Imagem do Serviço</label>
+                    <div class="svm-upload-area" id="svmUploadArea">
+                        <input type="file" id="svmImagem" accept="image/jpeg,image/png,image/gif,image/webp" class="svm-upload-input">
+                        <div class="svm-upload-placeholder">
+                            <i class="fas fa-camera"></i>
+                            <span>Clique para escolher uma imagem</span>
+                            <small>JPG, PNG, GIF ou WEBP (máx. 5MB)</small>
+                        </div>
+                        <img id="svmUploadPreview" class="svm-upload-preview" alt="Preview">
+                        <button type="button" class="svm-upload-remove" id="svmUploadRemove" title="Remover imagem">
+                            <i class="fas fa-times"></i>
+                        </button>
+                    </div>
                 </div>
                 <div class="svm-modal-actions">
                     <button type="button" class="svm-modal-btn svm-modal-btn-cancel" id="svmBtnCancel">Cancelar</button>

@@ -1,0 +1,1 @@
+{"version":3,"file":"Servico.d.ts","sourceRoot":"","sources":["../../src/entity/Servico.ts"],"names":[],"mappings":"AAEA,qBACa,OAAO;IAElB,EAAE,EAAE,MAAM,CAAC;IAGX,IAAI,EAAE,MAAM,CAAC;IAGb,SAAS,EAAE,MAAM,CAAC;IAGlB,OAAO,EAAE,MAAM,CAAC;IAGhB,KAAK,EAAE,MAAM,CAAC;IAGd,MAAM,EAAE,MAAM,CAAC;IAGf,MAAM,EAAE,MAAM,CAAC;CAChB"}
